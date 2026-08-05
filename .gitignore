@@ -1,5 +1,6 @@
 # vscode 配置
 .vscode/
+.codebuddy/
 
 # 构建和安装目录
 build/
