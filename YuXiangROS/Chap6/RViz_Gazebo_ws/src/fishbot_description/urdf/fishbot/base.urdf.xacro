@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- 导入导入惯量矩阵公式 -->
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/common_inertia.xacro" />
+  <xacro:macro name="base_xacro" params="length radius">
+
+    <link name="base_link">
+      <visual>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${length}" radius="${radius}" />
+        </geometry>
+        <material name="white">
+          <color rgba="1.0 1.0 1.0 0.5" />
+        </material>
+      </visual>
+      <!-- 碰撞箱: 复制粘贴visual后改标签名 -->
+      <collision>
+        <origin xyz="0 0 0.0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="${length}" radius="${radius}" />
+        </geometry>
+        <material name="white">
+          <color rgba="1.0 1.0 1.0 0.5" />
+        </material>
+      </collision>
+      <xacro:cylinder_inertia m="1.0" r="${radius}" h="${length}" />
+    </link>
+
+    <!-- 虚拟构件: 让轮子正好贴地 -->
+    <link name="base_footprint" />
+
+    <!-- 虚拟关节: 让轮子正好贴地 -->
+    <joint name="base_joint" type="fixed">
+      <parent link="base_footprint" />
+      <child link="base_link" />
+      <origin xyz="0 0 ${length/2.0+0.032-0.001}" rpy="0 0 0" />
+    </joint>
+  </xacro:macro>
+</robot>

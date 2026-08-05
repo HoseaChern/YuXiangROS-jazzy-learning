@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/common_inertia.xacro" />
+  <xacro:macro name="caster_xacro" params="caster_name xyz">
+
+    <!-- 万向轮支架 -->
+    <link name="${caster_name}_caster_swivel_link">
+      <inertial>
+        <mass value="0.01" />
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
+
+    <!-- 垂直转向关节：让万向轮能随转向自由旋转 -->
+    <joint name="${caster_name}_caster_swivel_joint" type="continuous">
+      <parent link="base_link" />
+      <child link="${caster_name}_caster_swivel_link" />
+      <origin xyz="${xyz}" />
+      <axis xyz="0 0 1" />
+    </joint>
+
+    <link name="${caster_name}_caster_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <sphere radius="0.016" />
+        </geometry>
+        <material name="yellow">
+          <color rgba="1.0 1.0 0.0 0.8" />
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <sphere radius="0.016" />
+        </geometry>
+        <material name="yellow">
+          <color rgba="1.0 1.0 0.0 0.8" />
+        </material>
+      </collision>
+      <xacro:sphere_inertia m="0.01" r="0.016" />
+    </link>
+
+    <!-- 球体连到支架上 -->
+    <joint name="${caster_name}_caster_wheel_joint" type="fixed">
+      <parent link="${caster_name}_caster_swivel_link" />
+      <child link="${caster_name}_caster_link" />
+      <origin xyz="0 0 0" />
+    </joint>
+
+    <!-- 设定: 切向摩擦系数/法向摩擦系数/接触刚度系数/阻尼系数 -->
+    <gazebo reference="${caster_name}_caster_link">
+      <mu1 value="0.0" />
+      <mu2 value="0.0" />
+      <kp value="100000.0" />
+      <kd value="1.0" />
+    </gazebo>
+  </xacro:macro>
+</robot>

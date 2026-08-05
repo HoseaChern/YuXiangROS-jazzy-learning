@@ -1,0 +1,498 @@
+<?xml version="1.0"?>
+<robot name="fishbot">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.1" length="0.12" />
+      </geometry>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 0.5" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.1" length="0.12" />
+      </geometry>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 0.5" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="1.0" />
+      <inertia ixx="0.0037000000000000006" ixy="0" ixz="0" iyy="0.0037000000000000006" iyz="0" izz="0.005000000000000001" />
+    </inertial>
+  </link>
+  <link name="base_footprint" />
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.02 0.02" />
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.02 0.02" />
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.25" />
+      <inertia ixx="1.6666666666666667e-05" ixy="0.0" ixz="0.0" iyy="1.6666666666666667e-05" iyz="0.0" izz="1.6666666666666667e-05" />
+    </inertial>
+  </link>
+  <link name="laser_cylinder_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.01" length="0.1" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.01" length="0.1" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="8.583333333333335e-06" ixy="0" ixz="0" iyy="8.583333333333335e-06" iyz="0" izz="5.000000000000001e-07" />
+    </inertial>
+  </link>
+  <link name="laser_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.02" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.02" length="0.02" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.05" />
+      <inertia ixx="6.666666666666666e-06" ixy="0" ixz="0" iyy="6.666666666666666e-06" iyz="0" izz="1e-05" />
+    </inertial>
+  </link>
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.1 0.02" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.1 0.02" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.5" />
+      <inertia ixx="0.00043333333333333337" ixy="0.0" ixz="0.0" iyy="3.3333333333333335e-05" iyz="0.0" izz="0.00043333333333333337" />
+    </inertial>
+  </link>
+  <link name="left_wheel_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57079 0 0" />
+      <geometry>
+        <cylinder radius="0.032" length="0.04" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079 0 0" />
+      <geometry>
+        <cylinder radius="0.032" length="0.04" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.15" />
+      <inertia ixx="5.8399999999999997e-05" ixy="0" ixz="0" iyy="5.8399999999999997e-05" iyz="0" izz="7.68e-05" />
+    </inertial>
+  </link>
+  <link name="right_wheel_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57079 0 0" />
+      <geometry>
+        <cylinder radius="0.032" length="0.04" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079 0 0" />
+      <geometry>
+        <cylinder radius="0.032" length="0.04" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.15" />
+      <inertia ixx="5.8399999999999997e-05" ixy="0" ixz="0" iyy="5.8399999999999997e-05" iyz="0" izz="7.68e-05" />
+    </inertial>
+  </link>
+  <link name="front_caster_swivel_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1e-06" ixy="0" ixz="0" iyy="1e-06" iyz="0" izz="1e-06" />
+    </inertial>
+  </link>
+  <link name="front_caster_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1.024e-06" ixy="0.0" ixz="0.0" iyy="1.024e-06" iyz="0.0" izz="1.024e-06" />
+    </inertial>
+  </link>
+  <link name="back_caster_swivel_link">
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1e-06" ixy="0" ixz="0" iyy="1e-06" iyz="0" izz="1e-06" />
+    </inertial>
+  </link>
+  <link name="back_caster_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.016" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 0.8" />
+      </material>
+    </collision>
+    <inertial>
+      <mass value="0.01" />
+      <inertia ixx="1.024e-06" ixy="0.0" ixz="0.0" iyy="1.024e-06" iyz="0.0" izz="1.024e-06" />
+    </inertial>
+  </link>
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="base_link" />
+    <origin xyz="0 0 0.091" rpy="0 0 0" />
+  </joint>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <origin xyz="0 0 0.02" />
+  </joint>
+  <joint name="laser_cylinder_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="laser_cylinder_link" />
+    <origin xyz="0 0 0.1" />
+  </joint>
+  <joint name="laser_joint" type="fixed">
+    <parent link="laser_cylinder_link" />
+    <child link="laser_link" />
+    <origin xyz="0 0 0.05" />
+  </joint>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="camera_link" />
+    <origin xyz="0.1 0 0.075" />
+  </joint>
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="left_wheel_link" />
+    <origin xyz="0 0.1 -0.06" />
+    <axis xyz="0 1 0" />
+  </joint>
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="right_wheel_link" />
+    <origin xyz="0 -0.1 -0.06" />
+    <axis xyz="0 1 0" />
+  </joint>
+  <joint name="front_caster_swivel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="front_caster_swivel_link" />
+    <origin xyz="0.08 0 -0.076" />
+    <axis xyz="0 0 1" />
+  </joint>
+  <joint name="front_caster_wheel_joint" type="fixed">
+    <parent link="front_caster_swivel_link" />
+    <child link="front_caster_link" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <joint name="back_caster_swivel_joint" type="continuous">
+    <parent link="base_link" />
+    <child link="back_caster_swivel_link" />
+    <origin xyz="-0.08 0 -0.076" />
+    <axis xyz="0 0 1" />
+  </joint>
+  <joint name="back_caster_wheel_joint" type="fixed">
+    <parent link="back_caster_swivel_link" />
+    <child link="back_caster_link" />
+    <origin xyz="0 0 0" />
+  </joint>
+  <ros2_control name="FishBotGazeboSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-1</param>
+        <param name="max">1</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-0.1</param>
+        <param name="max">0.1</param>
+      </command_interface>
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+    <joint name="right_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-1</param>
+        <param name="max">1</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-0.1</param>
+        <param name="max">0.1</param>
+      </command_interface>
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+    <joint name="front_caster_swivel_joint">
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+    </joint>
+    <joint name="back_caster_swivel_joint">
+      <state_interface name="position" />
+      <state_interface name="velocity" />
+    </joint>
+  </ros2_control>
+  <gazebo reference="laser_link">
+    <sensor name="laserscan" type="gpu_lidar">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <update_rate>20</update_rate>
+      <pose>0 0 0 0 0 0</pose>
+      <topic>scan</topic>
+      <frame_id>laser_link</frame_id>
+      <gz_frame_id>laser_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1.0</resolution>
+            <min_angle>0.0</min_angle>
+            <max_angle>6.28</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>
+          <max>8.0</max>
+          <resolution>0.015</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <topic>imu</topic>
+      <frame_id>imu_link</frame_id>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <update_rate>100</update_rate>
+      <always_on>true</always_on>
+      <imu>
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.0002</stddev>
+              <bias_mean>7.5e-06</bias_mean>
+              <bias_stddev>8e-07</bias_stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>0.017</stddev>
+              <bias_mean>0.1</bias_mean>
+              <bias_stddev>0.001</bias_stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+  <gazebo reference="camera_link">
+    <sensor name="camera_sensor" type="rgbd_camera">
+      <topic>camera</topic>
+      <frame_id>camera_optical_link</frame_id>
+      <gz_frame_id>camera_optical_link</gz_frame_id>
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <camera name="camera">
+        <horizontal_fov>1.5009831567</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>600</height>
+          <format>R8G8B8</format>
+        </image>
+        <distortion>
+          <k1>0.0</k1>
+          <k2>0.0</k2>
+          <k3>0.0</k3>
+          <p1>0.0</p1>
+          <p2>0.0</p2>
+          <center>0.5 0.5</center>
+        </distortion>
+      </camera>
+    </sensor>
+  </gazebo>
+  <gazebo reference="laser_cylinder_link">
+    <visual>
+      <material>
+        <ambient>0 0 0 1</ambient>
+        <diffuse>0 0 0 1</diffuse>
+        <specular>0.1 0.1 0.1 1</specular>
+        <emissive>0.0 0.0 0.0 1.0</emissive>
+      </material>
+    </visual>
+  </gazebo>
+  <gazebo reference="laser_link">
+    <visual>
+      <material>
+        <ambient>0 0 0 1</ambient>
+        <diffuse>0 0 0 1</diffuse>
+        <specular>0.1 0.1 0.1 1</specular>
+        <emissive>0.0 0.0 0.0 1.0</emissive>
+      </material>
+    </visual>
+  </gazebo>
+  <gazebo reference="left_wheel_link">
+    <mu1 value="20.0" />
+    <mu2 value="20.0" />
+    <kp value="100000.0" />
+    <kd value="1.0" />
+  </gazebo>
+  <gazebo reference="right_wheel_link">
+    <mu1 value="20.0" />
+    <mu2 value="20.0" />
+    <kp value="100000.0" />
+    <kd value="1.0" />
+  </gazebo>
+  <gazebo reference="front_caster_link">
+    <mu1 value="0.0" />
+    <mu2 value="0.0" />
+    <kp value="100000.0" />
+    <kd value="1.0" />
+  </gazebo>
+  <gazebo reference="back_caster_link">
+    <mu1 value="0.0" />
+    <mu2 value="0.0" />
+    <kp value="100000.0" />
+    <kd value="1.0" />
+  </gazebo>
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find fishbot_description)/config/ros2_controller/fishbot_ros2_controller.yaml</parameters>
+    </plugin>
+  </gazebo>
+</robot>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot name="first_robot">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.1" length="0.12" />
+      </geometry>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 0.5" />
+      </material>
+    </visual>
+  </link>
+  <link name="imu_up_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.02 0.02" />
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 0.5" />
+      </material>
+    </visual>
+  </link>
+  <link name="imu_down_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.02 0.02" />
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 0.5" />
+      </material>
+    </visual>
+  </link>
+  <joint name="imu_up_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_up_link" />
+    <origin xyz="0 0 0.02" rpy="0 0 0" />
+  </joint>
+  <joint name="imu_down_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_down_link" />
+    <origin xyz="0 0 -0.02" rpy="0 0 0" />
+  </joint>
+</robot>

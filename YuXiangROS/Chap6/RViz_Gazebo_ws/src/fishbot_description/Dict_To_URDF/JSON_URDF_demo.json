@@ -1,0 +1,52 @@
+{
+  "name": "first_robot",
+  "links": [
+    {
+      "name": "base_link",
+      "visual": {
+        "origin": {
+          "xyz": [0, 0, 0],
+          "rpy": [0, 0, 0]
+        },
+        "geometry": {
+          "type": "cylinder",
+          "radius": 0.1,
+          "length": 0.12
+        },
+        "material": {
+          "name": "white",
+          "color": [1.0, 1.0, 1.0, 0.5]
+        }
+      }
+    },
+    {
+      "name": "imu_link",
+      "visual": {
+        "origin": {
+          "xyz": [0, 0, 0],
+          "rpy": [0, 0, 0]
+        },
+        "geometry": {
+          "type": "box",
+          "size": [0.02, 0.02, 0.02]
+        },
+        "material": {
+          "name": "black",
+          "color": [0, 0, 0, 0.5]
+        }
+      }
+    }
+  ],
+  "joints": [
+    {
+      "name": "imu_joint",
+      "type": "fixed",
+      "parent": "base_link",
+      "child": "imu_link",
+      "origin": {
+        "xyz": [0, 0, 0.03],
+        "rpy": [0, 0, 0]
+      }
+    }
+  ]
+}

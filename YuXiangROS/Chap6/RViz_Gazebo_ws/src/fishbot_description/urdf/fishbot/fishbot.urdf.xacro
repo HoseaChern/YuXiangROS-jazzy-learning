@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="fishbot">
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/base.urdf.xacro" />
+  <!-- 传感器组件 -->
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/sensor/imu.urdf.xacro" />
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/sensor/laser.urdf.xacro" />
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/sensor/camera.urdf.xacro" />
+  <!-- 执行器组件 -->
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/actuator/wheel.urdf.xacro" />
+  <xacro:include filename="$(find fishbot_description)/urdf/fishbot/actuator/caster.urdf.xacro" />
+  <!-- Gazebo 插件 -->
+  <!-- [控制方式切换说明]
+       以下两种控制插件不可同时启用, 否则会争夺同一组轮子关节, 导致小车行为异常。
+       方式 A: Gazebo 原生差速插件 (gazebo_control_plugin.xacro)
+               直接使用 Gazebo 的 gz-sim-diff-drive-system 控制轮子,
+               需要配合 launch 中的 /cmd_vel /odom /tf /joint_states 桥接。
+       方式 B: ros2_control (fishbot.ros2_control.xacro)
+               使用 gz_ros2_control 插件 + diff_drive_controller 控制轮子,
+               相关 ROS 话题由控制器直接提供, 不需要桥接。
+       当前默认方式 B (ros2_control)。
+       如需切换为方式 A, 请取消下面 gazebo_control_plugin.xacro 的注释,
+       并注释掉 fishbot.ros2_control.xacro, 同时同步修改 launch 文件。 -->
+  <!-- <xacro:include
+    filename="$(find fishbot_description)/urdf/fishbot/plugins/gazebo_control_plugin.xacro" /> -->
+  <xacro:include
+    filename="$(find fishbot_description)/urdf/fishbot/plugins/gazebo_sensor_plugin.xacro" />
+  <xacro:include
+    filename="$(find fishbot_description)/urdf/fishbot/fishbot.ros2_control.xacro" />
+
+  <xacro:base_xacro length="0.12" radius="0.1" />
+  <!-- 传感器 -->
+  <xacro:imu_xacro xyz="0 0 0.02" />
+  <xacro:laser_xacro xyz="0 0 0.10" />
+  <xacro:camera_xacro xyz="0.10 0 0.075" />
+  <!-- 执行器 -->
+  <xacro:wheel_xacro wheel_name="left" xyz="0 0.10 -0.06" />
+  <xacro:wheel_xacro wheel_name="right" xyz="0 -0.10 -0.06" />
+  <xacro:caster_xacro caster_name="front" xyz="0.08 0 -0.076" />
+  <xacro:caster_xacro caster_name="back" xyz="-0.08 0 -0.076" />
+  <!-- Gazebo 插件调用 -->
+  <!-- [控制方式切换说明] 与上方 include 保持一致:
+       方式 A 启用时取消 <xacro:gazebo_control_plugin /> 注释;
+       方式 B 启用时保持 <xacro:fishbot_ros2_control /> 启用。 -->
+  <!-- <xacro:gazebo_control_plugin /> -->
+  <xacro:gazebo_sensor_plugin />
+  <xacro:fishbot_ros2_control />
+</robot>

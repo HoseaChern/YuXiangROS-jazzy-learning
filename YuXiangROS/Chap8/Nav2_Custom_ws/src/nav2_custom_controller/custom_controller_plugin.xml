@@ -1,0 +1,6 @@
+<library path="nav2_custom_controller_plugin">
+  <class name="nav2_custom_controller::CustomController"
+    type="nav2_custom_controller::CustomController" base_class_type="nav2_core::Controller">
+    <description>Custom Controller</description>
+  </class>
+</library>

@@ -1,0 +1,5 @@
+# Request
+string text # 需要转换的文本
+---
+# Response
+bool result # 转换结果

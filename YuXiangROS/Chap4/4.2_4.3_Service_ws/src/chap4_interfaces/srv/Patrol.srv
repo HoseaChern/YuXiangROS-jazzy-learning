@@ -1,0 +1,8 @@
+# Request
+float32 target_x # 目标x坐标
+float32 target_y # 目标y坐标
+---
+# Response
+int8 SUCCESS = 1 # 常量: 成功
+int8 FAILURE = 0 # 常量: 失败
+int8 result      # 结果

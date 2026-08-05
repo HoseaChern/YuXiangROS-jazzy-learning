@@ -1,0 +1,10 @@
+# Request
+sensor_msgs/Image image # 原始图像
+---
+# Response
+int16 number            # 人脸数
+float32 use_time        # 人脸检测耗时
+int32[] top             # 人脸位置
+int32[] right
+int32[] bottom
+int32[] left

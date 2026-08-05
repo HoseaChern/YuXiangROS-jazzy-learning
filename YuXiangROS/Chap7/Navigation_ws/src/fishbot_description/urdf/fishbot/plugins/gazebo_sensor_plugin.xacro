@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="gazebo_sensor_plugin">
+    <!-- 激光雷达 -->
+    <gazebo reference="laser_link">
+      <!-- ========== Harmonic 改动核心：传感器类型 gpu_lidar + 移除 Classic plugin ========== -->
+      <sensor name="laserscan" type="gpu_lidar">
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <!-- SLAM扫描建议在10-20Hz -->
+        <update_rate>20</update_rate>
+        <pose>0 0 0 0 0 0</pose>
+
+        <!-- 新增：指定 gz-transport 话题名与坐标帧 -->
+        <topic>scan</topic>
+        <frame_id>laser_link</frame_id>
+        <gz_frame_id>laser_link</gz_frame_id>
+
+        <!-- 改动：ray → lidar -->
+        <lidar>
+          <!-- 激光传感器配置 -->
+          <!-- 设置扫描范围 -->
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1.000000</resolution>
+              <min_angle>0.000000</min_angle>
+              <max_angle>6.280000</max_angle>
+            </horizontal>
+          </scan>
+          <!-- 设置扫描距离 -->
+          <range>
+            <min>0.120000</min>
+            <max>8.0</max>
+            <resolution>0.015000</resolution>
+          </range>
+          <!-- 设置噪声 -->
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+    </gazebo>
+
+    <!-- IMU -->
+    <gazebo reference="imu_link">
+      <!-- ========== Harmonic 改动核心：移除 Classic 插件，添加话题与帧 ========== -->
+      <sensor name="imu_sensor" type="imu">
+        <topic>imu</topic>
+        <frame_id>imu_link</frame_id>
+        <gz_frame_id>imu_link</gz_frame_id>
+
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+
+        <!-- 六轴噪声设置（格式不变） -->
+        <imu>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+                <bias_mean>0.0000075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+                <bias_mean>0.0000075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+                <bias_mean>0.0000075</bias_mean>
+                <bias_stddev>0.0000008</bias_stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+                <bias_mean>0.1</bias_mean>
+                <bias_stddev>0.001</bias_stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+    </gazebo>
+
+    <!-- 深度相机 -->
+    <gazebo reference="camera_link">
+      <!-- ========== 改动核心：depth → rgbd_camera，移除 Classic 插件 ========== -->
+      <sensor name="camera_sensor" type="rgbd_camera">
+        <topic>camera</topic>
+        <frame_id>camera_optical_link</frame_id>
+        <gz_frame_id>camera_optical_link</gz_frame_id>
+
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+
+        <!-- 相机参数 (格式不变) -->
+        <camera name="camera">
+          <horizontal_fov>1.5009831567</horizontal_fov>
+          <image>
+            <width>800</width>
+            <height>600</height>
+            <format>R8G8B8</format>
+          </image>
+          <distortion>
+            <k1>0.0</k1>
+            <k2>0.0</k2>
+            <k3>0.0</k3>
+            <p1>0.0</p1>
+            <p2>0.0</p2>
+            <center>0.5 0.5</center>
+          </distortion>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="fishbot_ros2_control">
+    <!-- ros2_control 硬件系统, 与 Gazebo 仿真环境交互 -->
+    <ros2_control name="FishBotGazeboSystem" type="system">
+      <hardware>
+        <!-- [说明] Jazzy + Harmonic 下使用 GazeboSimSystem 硬件接口,
+             负责把控制器的速度/力矩命令传给 Gazebo, 并读取关节状态。 -->
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </hardware>
+      <!-- 驱动轮关节 -->
+      <joint name="left_wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <command_interface name="effort">
+          <param name="min">-0.1</param>
+          <param name="max">0.1</param>
+        </command_interface>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+      <joint name="right_wheel_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <command_interface name="effort">
+          <param name="min">-0.1</param>
+          <param name="max">0.1</param>
+        </command_interface>
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+      <!-- 万向轮关节 -->
+      <joint name="front_caster_swivel_joint">
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+      <joint name="back_caster_swivel_joint">
+        <state_interface name="position" />
+        <state_interface name="velocity" />
+      </joint>
+    </ros2_control>
+
+    <!-- [说明] Gazebo 插件: 在 Gazebo 内部启动 controller_manager,
+         并加载 fishbot_ros2_controller.yaml 中的控制器配置。
+         filename="gz_ros2_control-system" 对应 ROS 2 Jazzy + Gazebo Harmonic 安装。 -->
+    <gazebo>
+      <plugin filename="gz_ros2_control-system"
+        name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(find fishbot_description)/config/ros2_controller/fishbot_ros2_controller.yaml</parameters>
+      </plugin>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

@@ -1,0 +1,812 @@
+<?xml version="1.0"?>
+<!--
+  Gazebo Harmonic 室内仿真世界
+  三室一厅布局，四面围墙，上不封顶
+  房间尺寸：20m x 15m，墙高 3m
+  卧室1（左上，大主卧）：8m x 5m
+  卧室2（右上，次卧）  ：13m x 5m
+  卧室3（左下，书房）  ：7m x 10m
+  客厅（右侧大空间）   ：13m x 10m
+-->
+<sdf version="1.11">
+  <world name="apartment_three_bedroom">
+
+    <!-- ==================== 物理设定 ==================== -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- 核心系统插件 -->
+    <plugin filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics" />
+    <plugin filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster" />
+    <plugin filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands" />
+    <plugin filename="gz-sim-imu-system"
+      name="gz::sim::systems::Imu" />
+    <plugin filename="gz-sim-contact-system"
+      name="gz::sim::systems::Contact" />
+
+    <!-- ==================== 场景与光照 ==================== -->
+    <scene>
+      <ambient>0.45 0.45 0.45 1.0</ambient>
+      <background>0.65 0.68 0.72 1.0</background>
+      <shadows>true</shadows>
+      <grid>false</grid>
+    </scene>
+
+    <!-- 主光源：模拟日光 -->
+    <light type="directional" name="sun">
+      <pose>5 -5 8 0 0.6 0.8</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1.2</intensity>
+      <direction>-0.3 0.3 -0.9</direction>
+      <diffuse>1.0 0.95 0.85 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>200</range>
+        <linear>0</linear>
+        <constant>0.8</constant>
+        <quadratic>0</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- 补光：减少室内死角阴影 -->
+    <light type="point" name="indoor_fill">
+      <pose>0 0 2.8 0 0 0</pose>
+      <cast_shadows>false</cast_shadows>
+      <intensity>0.4</intensity>
+      <diffuse>0.9 0.9 1.0 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>25</range>
+        <linear>0.05</linear>
+        <constant>0.1</constant>
+        <quadratic>0.01</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- ==================== 室外地面 ==================== -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.35 0.35 0.35 1</ambient>
+            <diffuse>0.35 0.35 0.35 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================== 房间结构（静态） ==================== -->
+    <model name="room_structure">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+
+      <!-- ======================================================
+           地面分区：用不同颜色区分各房间（薄板，避免 z-fighting）
+           ====================================================== -->
+      <!-- 客厅地面 -->
+      <link name="floor_living">
+        <pose>3.5 -2.5 0.01 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>13.0 10.0 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.88 0.84 0.78 1</ambient>
+            <diffuse>0.88 0.84 0.78 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>13.0 10.0 0.02</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.7</mu>
+                <mu2>0.7</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <!-- 卧室1（左上，大主卧）地面 -->
+      <link name="floor_bedroom1">
+        <pose>-6.5 5.0 0.01 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7.0 5.0 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.78 0.72 0.62 1</ambient>
+            <diffuse>0.78 0.72 0.62 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7.0 5.0 0.02</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <!-- 卧室2（右上，次卧）地面 -->
+      <link name="floor_bedroom2">
+        <pose>3.5 5.0 0.01 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>13.0 5.0 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.65 0.72 0.82 1</ambient>
+            <diffuse>0.65 0.72 0.82 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>13.0 5.0 0.02</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <!-- 卧室3（左下，书房/小卧）地面 -->
+      <link name="floor_bedroom3">
+        <pose>-6.5 -2.5 0.01 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>7.0 10.0 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.68 0.80 0.70 1</ambient>
+            <diffuse>0.68 0.80 0.70 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>7.0 10.0 0.02</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+
+      <!-- ======================================================
+           外墙（四面围墙，高 3m，厚 0.2m，上不封顶）
+           ===================================================== -->
+      <link name="wall_north">
+        <pose>0.0 7.6 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>20.4 0.2 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.82 0.82 0.82 1</ambient>
+            <diffuse>0.82 0.82 0.82 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>20.4 0.2 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_south">
+        <pose>0.0 -7.6 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>20.4 0.2 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.82 0.82 0.82 1</ambient>
+            <diffuse>0.82 0.82 0.82 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>20.4 0.2 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_west">
+        <pose>-10.1 0.0 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 15.2 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.82 0.82 0.82 1</ambient>
+            <diffuse>0.82 0.82 0.82 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.2 15.2 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_east">
+        <pose>10.1 0.0 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 15.2 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.82 0.82 0.82 1</ambient>
+            <diffuse>0.82 0.82 0.82 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.2 15.2 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+
+      <!-- ======================================================
+           内墙：纵墙 x = -3（分隔左右两大区域，留门洞）
+           ===================================================== -->
+      <link name="wall_divider_x_south">
+        <pose>-3.0 -5.75 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.15 3.5 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.15 3.5 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_divider_x_mid">
+        <pose>-3.0 0.25 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.15 4.5 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.15 4.5 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_divider_x_north">
+        <pose>-3.0 6.5 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.15 2.0 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.15 2.0 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+
+      <!-- ======================================================
+           内墙：横墙 y = 2.5（分隔上排卧室与下排空间）
+           ===================================================== -->
+      <link name="wall_divider_y_west">
+        <pose>-9.0 2.5 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_divider_y_west_east">
+        <pose>-4.5 2.5 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>3.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>3.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_divider_y_east_west">
+        <pose>-0.5 2.5 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>5.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>5.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="wall_divider_y_east">
+        <pose>7.0 2.5 1.5 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>6.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>6.0 0.15 3.0</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.5</mu>
+                <mu2>0.5</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+
+      <!-- ======================================================
+           简单家具：用于导航/避障仿真测试
+           ===================================================== -->
+      <link name="sofa">
+        <pose>6 -4 0.3 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2.0 0.8 0.6</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.4 0.3 1</ambient>
+            <diffuse>0.6 0.4 0.3 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2.0 0.8 0.6</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="coffee_table">
+        <pose>6 -2 0.2 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.0 0.6 0.4</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.35 0.25 1</ambient>
+            <diffuse>0.5 0.35 0.25 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.0 0.6 0.4</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="bed1">
+        <pose>-6.5 5.5 0.25 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2.0 1.5 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.6 0.7 1</ambient>
+            <diffuse>0.7 0.6 0.7 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2.0 1.5 0.5</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.7</mu>
+                <mu2>0.7</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="bed2">
+        <pose>3.5 5.5 0.2 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.8 1.2 0.4</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.65 0.75 1</ambient>
+            <diffuse>0.6 0.65 0.75 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.8 1.2 0.4</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.7</mu>
+                <mu2>0.7</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="desk3">
+        <pose>-8 -4 0.35 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.2 0.6 0.7</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.55 0.4 0.3 1</ambient>
+            <diffuse>0.55 0.4 0.3 1</diffuse>
+            <specular>0.15 0.15 0.15 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.2 0.6 0.7</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="chair3">
+        <pose>-6.5 -4 0.25 0 0 -0.5</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.4 0.3 0.25 1</ambient>
+            <diffuse>0.4 0.3 0.25 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <link name="tv_stand">
+        <pose>8 -6 0.3 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1.5 0.4 0.6</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.25 0.2 1</ambient>
+            <diffuse>0.3 0.25 0.2 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1.5 0.4 0.6</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.6</mu>
+                <mu2>0.6</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+    </model>
+
+    <!-- ==================== 启动相机（可选） ==================== -->
+    <gui fullscreen="0">
+      <camera name="user_camera">
+        <pose>-15 -15 12 0 0.8 0.9</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+  </world>
+</sdf>

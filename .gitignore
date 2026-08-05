@@ -1,0 +1,17 @@
+# vscode 配置
+.vscode/
+
+# 构建和安装目录
+build/
+install/
+log/
+
+# python
+.venv/
+__pycache__/
+
+# Chap9 第三方 git clone 包（读者需自行 clone，见 README）
+YuXiangROS/Chap9/Robot_ws/src/micro-ROS-Agent/
+YuXiangROS/Chap9/Robot_ws/src/micro_ros_msgs/
+YuXiangROS/Chap9/Robot_ws/src/ros_serial2wifi/
+YuXiangROS/Chap9/Robot_ws/src/ydlidar_ros2/
