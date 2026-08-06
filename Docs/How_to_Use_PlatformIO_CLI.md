@@ -1,6 +1,6 @@
 # PlatformIO 终端命令速查笔记
 
-> 整理日期：2026-07-30  
+> 整理日期：2026-07-30；最近更新：2026-08-06（网络配置分层方案 + src/ 子目录多固件隔离）  
 > 适用环境：Ubuntu 24.04 + VS Code + PlatformIO Core  
 > 核心原则：**终端命令与 VS Code 扩展调用的是同一套 PIO Core**，但终端可显式控制环境变量（如代理）。
 
@@ -105,6 +105,35 @@ pio run -e esp32-s3
 pio run -e esp32-s3 --target upload
 ```
 
+### 2.5 src/ 子目录多固件隔离（build_src_filter + -e）
+
+> 参考项目：`~/Documents/PlatformIO_project/fishbot_motion_control`（鱼香ROS 书配套，尚未上传为 repo）
+
+**场景**：在 `src/` 下新建子目录写 demo（如 `src/wifi_test/main.cpp`），不动主程序 `src/main.cpp`。
+**坑**：`src/` 下同时存在两个 `setup()`/`loop()` 会符号重复定义，链接失败。
+**解法**：`build_src_filter` 环境隔离 + 独立 env + `-e` 指定环境。以 fishbot 项目实际配置为例：
+
+```ini
+; 主固件: 排除 wifi_test 目录, 保证只编译 src/main.cpp
+[env:esp32-s3-devkitc-1]
+build_src_filter = -<wifi_test>
+
+; 网络测试固件: 只编译 src/wifi_test/main.cpp, 与主固件互不干扰
+[env:esp32-s3-devkitc-1-wifi-test]
+build_src_filter = +<wifi_test>
+```
+
+```bash
+# 只编译/烧录测试固件（重点: -e 指定 env 名）
+pio run -e esp32-s3-devkitc-1-wifi-test -t upload
+
+# 编译/烧录主固件
+pio run -e esp32-s3-devkitc-1 -t upload
+```
+
+> ⚠️ 注意：PlatformIO 6.x 已将 `src_filter` 更名为 **`build_src_filter`**，语法不变（`+<目录>` 仅包含 / `-<目录>` 排除）。
+> 多 env 共享的选项（如 `lib_deps`、`board_microros_transport`）需在两个 env 里各自声明，或用 `[platformio]` + `default_envs` 等进阶写法。
+
 ---
 
 ## 3. 板子查询
@@ -179,37 +208,84 @@ pio pkg uninstall --global --platform "platformio/espressif32"
 
 ## 5. 代理与网络配置
 
-### 5.1 临时代理（当前终端会话）
+> **本机现状**：Clash Verge（混合端口 7897）。**5.1 git 定向代理、5.2 zshrc 代理函数、5.3 pip 镜像均已配置，5.4 VSCode inheritEnv 已解决**；仅 TUN 模式未启用（可选）。
+
+PIO 的网络需求分三类，各有对应解法：
+
+- `lib_deps` 的 GitHub git 依赖 → 5.1 git 定向代理
+- platform/toolchain 下载（`dl.platformio.org`）→ 5.2 环境变量
+- `pio upgrade` / pip 装包 → 5.2 + 5.3 的 pip 镜像
+
+### 5.1 git 定向代理（已配置 ✅，解决 `lib_deps` 的 GitHub 依赖）
+
+git 只认环境变量或 `git config`，不读"系统代理"。只对 github.com 走代理，不依赖环境变量：
 
 ```bash
-export HTTP_PROXY="http://127.0.0.1:7890"
-export HTTPS_PROXY="http://127.0.0.1:7890"
-# 端口根据你的代理软件修改：Clash 默认 7890，V2RayA 默认 20171
+git config --global http.https://github.com.proxy http://127.0.0.1:7897
+git config --global https.https://github.com.proxy http://127.0.0.1:7897
 
-# 然后执行 PIO 命令
-pio project init --board esp32-s3-devkitc-1 --project-dir test
+git ls-remote https://github.com/fishros/micro_ros_platformio.git HEAD  # 验证, 应秒回
+git config --global --get-regexp 'proxy'                      # 查看
+git config --global --unset-all http.https://github.com.proxy  # 移除
 ```
 
-### 5.2 永久代理（系统级，推荐）
+### 5.2 `~/.zshrc` 代理管理函数（已配置 ✅，解决工具链下载 + pip）
+
+PIO 从 `dl.platformio.org` 下载 platform/toolchain 走 HTTPS，需要环境变量。函数带**存活检测**（代理开着才 export，关了自动 unset，避免"变量指向死端口 → 连接被拒"），且静默执行避免 p10k instant prompt 警告：
 
 ```bash
-# Ubuntu 24.04 使用 systemd 用户环境
-mkdir -p ~/.config/environment.d
-cat > ~/.config/environment.d/90-proxy.conf << 'EOF'
-HTTP_PROXY=http://127.0.0.1:7890
-HTTPS_PROXY=http://127.0.0.1:7890
-http_proxy=http://127.0.0.1:7890
-https_proxy=http://127.0.0.1:7890
-EOF
-
-# 注销并重新登录（或重启）后生效
+proxy_port=7897
+proxy_on() {
+  local addr="http://127.0.0.1:${proxy_port}"
+  if curl -x "$addr" -m 2 -s -o /dev/null https://www.gstatic.com/generate_204; then
+    export http_proxy="$addr" https_proxy="$addr" all_proxy="$addr"
+    export no_proxy="127.0.0.1,localhost,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,.local"
+    export NO_PROXY="$no_proxy"; return 0
+  else proxy_off; return 1; fi
+}
+proxy_off() { unset http_proxy https_proxy all_proxy no_proxy NO_PROXY; }
+proxy_status() { proxy_on && echo "[proxy] ON  http://127.0.0.1:${proxy_port}" || echo "[proxy] OFF"; }
+proxy_on   # 开终端自动执行
 ```
 
-### 5.3 pip 国内镜像（PIO 底层依赖 pip）
+- `NO_PROXY` 兜住本地/局域网（micro-ROS Agent 的 UDP 不受影响）
+- 手动命令：`proxy_on` / `proxy_off` / `proxy_status`
+
+### 5.3 pip 国内镜像（已配置 ✅，`pio upgrade` 本质是 pip）
+
+`~/.config/pip/pip.conf` 已配置（清华源 + trusted-host，与代理解耦）：
+
+```ini
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+trusted-host = pypi.tuna.tsinghua.edu.cn
+```
+
+### 5.4 VSCode 内置终端（已解决 ✅，inheritEnv）
+
+`settings.json` 的 `"terminal.integrated.inheritEnv": false` 会使内置终端**不继承环境变量**，`git clone` 龟速。本机已改为 `true`（继承主进程环境，VSCode 自带终端即正常）：
+
+```json
+"terminal.integrated.inheritEnv": true,
+```
+
+备用方案 B：保持 `false` 时，内置终端以 login shell 启动会执行 `~/.zshrc`，5.2 的代理函数自动生效（此路未用）。
+
+> 仅 **TUN 模式**（Clash Verge 全系统透明代理，零配置、占用略高）未启用，需要时再开。
+
+### 5.5 排查命令速查
 
 ```bash
-pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+env | grep -i proxy                      # 当前环境变量的代理
+git config --global --get-regexp 'proxy' # git 代理配置
+ss -tlnp | grep 127.0.0.1                # 找本机代理真实端口
+curl -x http://127.0.0.1:7897 -I https://github.com   # 验证端口可用(HTTP/200)
+ps -p $PPID -o args=                     # 内置终端是否 login shell
 ```
+
+- 常见端口：Clash for Windows / ClashX `7890`；**Clash Verge Rev `7897`（本机）**；v2rayN `10809`；Shadowsocks `1080`
+- git 的 `https_proxy` 填 **HTTP** 代理地址；只有 SOCKS5 端口时填 `socks5://127.0.0.1:端口`
+- 报错 `Failed to connect to 127.0.0.1 port XXXX after 0 ms` = 该端口没有代理进程在监听（不是变量问题）
 
 ---
 
@@ -272,6 +348,18 @@ A: 检查 `monitor_speed` 是否匹配代码中的 `Serial.begin()` 波特率。
 ### Q: 找不到板子定义
 
 A: 先用 `pio boards | grep -i 关键词` 搜索，用通用板 ID（如 `esp32-s3-devkitc-1`）即可。
+
+### Q: `lib_deps` 的 GitHub 依赖下载龟速/失败
+
+A: git 不读系统代理，只认环境变量或 `git config`。设置 git 定向代理（见 5.1），或检查 VSCode 内置终端是否被 `inheritEnv: false` 截断环境变量（见 5.4）。
+
+### Q: 下载 platform / toolchain 卡住（`dl.platformio.org`）
+
+A: 走 HTTPS 需要 `http_proxy`/`https_proxy` 环境变量。用 5.2 的 zshrc 代理函数（带存活检测）；`pio upgrade` 慢则走 5.3 的 pip 镜像。
+
+### Q: `Failed to connect to 127.0.0.1 port XXXX after 0 ms`
+
+A: 端口写错或代理未开启 —— 该端口没有代理进程在监听，与变量传递无关。用 `ss -tlnp | grep 127.0.0.1` 找真实端口，`curl -x` 验证（见 5.5）。
 
 ---
 
