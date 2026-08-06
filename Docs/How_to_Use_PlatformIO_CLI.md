@@ -116,7 +116,7 @@ pio run -e esp32-s3 --target upload
 ```ini
 ; 主固件: 排除 wifi_test 目录, 保证只编译 src/main.cpp
 [env:esp32-s3-devkitc-1]
-build_src_filter = -<wifi_test>
+build_src_filter = +<*>-<wifi_test>
 
 ; 网络测试固件: 只编译 src/wifi_test/main.cpp, 与主固件互不干扰
 [env:esp32-s3-devkitc-1-wifi-test]
