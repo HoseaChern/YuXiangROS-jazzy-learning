@@ -10,6 +10,7 @@
 
 - [项目简介](#项目简介)
 - [环境说明与原书差异](#环境说明与原书差异)
+- [Python 虚拟环境（.venv）说明](#python-虚拟环境venv说明)
 - [Gazebo Classic → Harmonic 迁移要点](#gazebo-classic--harmonic-迁移要点)
 - [各章导读](#各章导读)
 - [原创工具：Dict_To_URDF](#原创工具dict_to_urdf)
@@ -43,8 +44,33 @@
 | 世界文件 | `.world`（SDF 1.6） | `.sdf`（SDF 1.9+/1.11） |
 | 话题/服务桥接 | 自动桥接 | `parameter_bridge` 显式桥接 |
 | 仿真时钟 | 部分节点自动 | 需显式 `use_sim_time: True` |
+| Python 环境管理 | 系统 Python 直接 `pip install` | **`.venv` 虚拟环境**（Ubuntu 23.10+ 遵循 PEP 668，详见下方说明） |
 
 > 环境背景：Gazebo Classic 已于 **2025 年 1 月停止维护**，Ubuntu 24.04 软件源中无法直接安装 Classic，因此升级到 Jazzy 后必须迁移到 Gazebo Harmonic（详见下方迁移笔记）。
+
+## Python 虚拟环境（.venv）说明
+
+**为什么需要 .venv？** Ubuntu 从 23.10 起遵循 [PEP 668](https://peps.python.org/pep-0668/)，系统 Python 默认被标记为 "externally managed"，直接 `pip install` 会被拒绝（强行 `--break-system-packages` 不推荐）；而 ROS 2 又绑定系统 Python，无法用 conda 替代（conda 自带的 Python 与系统 Python 并存容易冲突）。因此，**书中第 4 / 7 / 8 章需要安装第三方 Python 库时，本仓库统一使用 `.venv` 虚拟环境**：
+
+| 章节 | 需要的第三方库 | 现成启动脚本 |
+|---|---|---|
+| `Chap4`（人脸检测服务） | `face_recognition`、`dlib`、OpenCV 等 | `YuXiangROS/Chap4/4.2_4.3_Service_ws/start_venv.zsh` |
+| `Chap7`（Nav2 巡逻 + 语音播报） | 语音播报等 | `YuXiangROS/Chap7/Navigation_ws/start_venv.zsh` |
+| `Chap8`（Nav2 自定义插件） | 同上 | `YuXiangROS/Chap8/Nav2_Custom_ws/start_venv.zsh` |
+
+**核心命令**（ROS 2 专用姿势，`--system-site-packages` 必须加，否则 venv 里 import 不到 `rclpy`）：
+
+```bash
+python3 -m venv .venv --system-site-packages   # 创建（继承系统已装的 ROS 2 包）
+source .venv/bin/activate                        # 激活
+pip install <package_name>                       # 安装包（无需 sudo）
+```
+
+> ⚠️ **两个高频踩坑**：
+> 1. `ros2 run` 走系统 Python，找不到 venv 里装的包 —— 必须在 venv 里安装自己的 `colcon`（`pip install --ignore-installed colcon-common-extensions`），并让 `which colcon` 指向 `.venv/bin/colcon`；
+> 2. 工作空间路径**不要含空格**，否则 setuptools 生成的 shebang 会被空格截断，导致 `ros2 run` 失败（`4.2 Service_ws` → `4.2_4.3_Service_ws` 即为踩坑后改名重建）。
+
+完整笔记（前置安装、zsh 自动激活、venv vs conda 对比、4 个踩坑详解、一键启动脚本模板）见 **`Docs/About pyvenv.md`**。
 
 ## Gazebo Classic → Harmonic 迁移要点
 

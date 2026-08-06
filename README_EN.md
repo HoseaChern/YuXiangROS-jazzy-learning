@@ -10,6 +10,7 @@
 
 - [Introduction](#introduction)
 - [Environment & Differences from the Book](#environment--differences-from-the-book)
+- [Python Virtual Environment (.venv)](#python-virtual-environment-venv)
 - [Gazebo Classic → Harmonic Migration Essentials](#gazebo-classic--harmonic-migration-essentials)
 - [Chapter Guide](#chapter-guide)
 - [Original Tool: Dict_To_URDF](#original-tool-dict_to_urdf)
@@ -43,8 +44,33 @@ The repo also contains 11 personal study notes (`Docs/` directory), of which [Ab
 | World file | `.world` (SDF 1.6) | `.sdf` (SDF 1.9+/1.11) |
 | Topic/service bridging | automatic | explicit `parameter_bridge` |
 | Simulation clock | partially automatic | explicit `use_sim_time: True` required |
+| Python package management | system Python, direct `pip install` | **`.venv` virtual environment** (Ubuntu 23.10+ enforces PEP 668, see below) |
 
 > Background: Gazebo Classic reached **end of life in January 2025** and is no longer installable from the Ubuntu 24.04 apt repositories, so moving to Jazzy requires migrating to Gazebo Harmonic (see the migration notes below).
+
+## Python Virtual Environment (.venv)
+
+**Why .venv?** Since Ubuntu 23.10, the system Python follows [PEP 668](https://peps.python.org/pep-0668/) and is marked "externally managed", so direct `pip install` is rejected (forcing `--break-system-packages` is not recommended). Meanwhile ROS 2 is bound to the system Python, and conda's own Python coexists poorly with it. Therefore, **whenever Chapters 4 / 7 / 8 require installing third-party Python libraries, this repo uniformly uses a `.venv` virtual environment**:
+
+| Chapter | Third-party libraries needed | Ready-made activation script |
+|---|---|---|
+| `Chap4` (face detection service) | `face_recognition`, `dlib`, OpenCV, etc. | `YuXiangROS/Chap4/4.2_4.3_Service_ws/start_venv.zsh` |
+| `Chap7` (Nav2 patrol + speech broadcast) | speech broadcast, etc. | `YuXiangROS/Chap7/Navigation_ws/start_venv.zsh` |
+| `Chap8` (Nav2 custom plugins) | same as above | `YuXiangROS/Chap8/Nav2_Custom_ws/start_venv.zsh` |
+
+**Core commands** (the ROS 2 specific recipe — `--system-site-packages` is required, otherwise `rclpy` is not importable inside the venv):
+
+```bash
+python3 -m venv .venv --system-site-packages   # create (inherits the system-installed ROS 2 packages)
+source .venv/bin/activate                        # activate
+pip install <package_name>                       # install (no sudo needed)
+```
+
+> ⚠️ **Two frequent gotchas**:
+> 1. `ros2 run` uses the system Python and won't see packages installed in the venv — install your own `colcon` inside the venv (`pip install --ignore-installed colcon-common-extensions`) and make sure `which colcon` points to `.venv/bin/colcon`;
+> 2. The workspace path **must not contain spaces**, otherwise setuptools-generated shebangs get truncated at the space and `ros2 run` fails (`4.2 Service_ws` → `4.2_4.3_Service_ws` was renamed after exactly this pitfall).
+
+The full note (prerequisites, zsh auto-activation, venv vs conda comparison, detailed walkthrough of 4 pitfalls, one-click activation script template) is in **`Docs/About pyvenv.md`** (in Chinese).
 
 ## Gazebo Classic → Harmonic Migration Essentials
 
