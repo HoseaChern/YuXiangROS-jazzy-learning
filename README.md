@@ -29,7 +29,7 @@
 - 将 Gazebo Classic 生态（`gazebo_ros`、`spawn_entity.py`、`gazebo_ros2_control`、`.world` 世界文件）迁移至 Gazebo Harmonic 生态（`ros_gz_sim`、`create`、`gz_ros2_control`、`.sdf` 世界文件）
 - 全部迁移改动以 `[旧版: xxx]` 代码注释形式保留对照说明，方便初学者理解差异
 
-仓库内还包含 11 篇个人学习笔记（`Docs/` 目录），其中 [About Gazebo Classic vs Harmonic.md](Docs/About%20Gazebo%20Classic%20vs%20Harmonic.md) 深入讲解了本次环境迁移的全部痛点与解决过程。
+仓库内还包含 12 篇个人学习笔记（`Docs/` 目录），其中 [About Gazebo Classic vs Harmonic.md](Docs/About%20Gazebo%20Classic%20vs%20Harmonic.md) 深入讲解了本次环境迁移的全部痛点与解决过程。
 
 ## 环境说明与原书差异
 
