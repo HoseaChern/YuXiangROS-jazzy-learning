@@ -53,7 +53,7 @@ source .venv/bin/activate
 
 激活后提示符前缀会出现 `(.venv)`：
 
-```
+```bash
 (.venv) user@host:~/your_project$
 ```
 
@@ -107,18 +107,18 @@ chpwd_functions+=(auto_venv)
 
 ## 六、venv vs conda/mamba 对比
 
-| 维度                | `venv`                                       | `conda` / `mamba`                                               |
-| ------------------- | -------------------------------------------- | --------------------------------------------------------------- |
-| **来源**            | Python 标准库内置                            | Anaconda/Miniconda 独立发行版                                   |
-| **安装方式**        | `apt install python3-venv`                   | 下载安装包或 `apt install miniconda`                            |
-| **Python 版本管理** | ❌ 只能使用系统已安装的 Python 版本           | ✅ 可安装任意 Python 版本（`conda create -n py311 python=3.11`） |
-| **非 Python 依赖**  | ❌ 不支持（需手动 `apt install`）             | ✅ 支持（`conda install numpy` 会自动处理 C 库依赖）             |
-| **包管理**          | `pip`                                        | `conda` + `pip` 混合                                            |
-| **环境存储位置**    | 项目目录内（`.venv/`）                       | `~/miniconda3/envs/` 集中管理                                   |
-| **启动速度**        | ⚡ 快（纯 Python，无额外开销）                | 稍慢（需加载 conda 基础环境）                                   |
-| **与 ROS 2 配合**   | ✅ 直接用 `--system-site-packages` 继承系统包 | ⚠️ 需额外配置 `PYTHONPATH`，容易冲突                             |
-| **离线/内网环境**   | 需手动准备 wheel 包                          | ✅ `conda` 可自建 channel，离线部署更方便                        |
-| **典型场景**        | 轻量项目、系统 Python 已满足需求             | 多版本 Python、复杂 C 依赖、数据科学栈                          |
+| 维度                | `venv`                                     | `conda` / `mamba`                                             |
+| ------------------- | ------------------------------------------ | ------------------------------------------------------------- |
+| **来源**            | Python 标准库内置                          | Anaconda/Miniconda 独立发行版                                 |
+| **安装方式**        | `apt install python3-venv`                 | 下载安装包或 `apt install miniconda`                          |
+| **Python 版本管理** | 只能使用系统已安装的 Python 版本           | 可安装任意 Python 版本（`conda create -n py311 python=3.11`） |
+| **非 Python 依赖**  | 不支持（需手动 `apt install`）             | 支持（`conda install numpy` 会自动处理 C 库依赖）             |
+| **包管理**          | `pip`                                      | `conda` + `pip` 混合                                          |
+| **环境存储位置**    | 项目目录内（`.venv/`）                     | `~/miniconda3/envs/` 集中管理                                 |
+| **启动速度**        | 快（纯 Python，无额外开销）                | 稍慢（需加载 conda 基础环境）                                 |
+| **与 ROS 2 配合**   | 直接用 `--system-site-packages` 继承系统包 | 需额外配置 `PYTHONPATH`，容易冲突                             |
+| **离线/内网环境**   | 需手动准备 wheel 包                        | `conda` 可自建 channel，离线部署更方便                        |
+| **典型场景**        | 轻量项目、系统 Python 已满足需求           | 多版本 Python、复杂 C 依赖、数据科学栈                        |
 
 ### 一句话总结
 
@@ -132,6 +132,7 @@ chpwd_functions+=(auto_venv)
 ### Q1: 为什么 Ubuntu 24.04 直接 `pip install` 会报错？
 
 系统 Python 被标记为 "externally managed"（PEP 668），防止用户误装包破坏系统工具。解决方案：
+
 - 用 `venv` 创建隔离环境 ✅
 - 或加 `--break-system-packages` 强行安装 ❌（不推荐）
 
@@ -213,6 +214,7 @@ which colcon  # 确认指向 venv
 **原因**：setuptools 生成的 shebang 是绝对路径，如 `#!/home/user/4.2 Service_ws/.venv/bin/python3`。Linux 内核解析 shebang 时以空格分隔，把 `Service_ws/.venv/bin/python3` 当成参数，导致解释器路径断裂。
 
 **解决**：
+
 - **彻底**：工作空间目录名不要用空格，如 `4.2_Service_ws`。
 - **重建 venv**：改名后必须重建 venv，因为 venv 内部硬编码了旧路径。
 

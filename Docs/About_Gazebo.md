@@ -25,13 +25,13 @@
 
 ## 二、ROS 包名与依赖
 
-| 项目 | Gazebo Classic | Gazebo Harmonic |
-| :--- | :--- | :--- |
-| 启动 Gazebo 的包 | `gazebo_ros` | `ros_gz_sim` |
-| 生成实体的包 | `gazebo_ros` | `ros_gz_sim` |
-| ROS-Gazebo 桥接 | `gazebo_ros_pkgs` | `ros_gz_bridge` |
-| ros2_control 插件 | `gazebo_ros2_control` | `gz_ros2_control` |
-| 安装命令 | `sudo apt install ros-${ROS_DISTRO}-gazebo-ros-pkgs` | `sudo apt install ros-${ROS_DISTRO}-ros-gz-sim` |
+| 项目              | Gazebo Classic                                       | Gazebo Harmonic                                 |
+| :---------------- | :--------------------------------------------------- | :---------------------------------------------- |
+| 启动 Gazebo 的包  | `gazebo_ros`                                         | `ros_gz_sim`                                    |
+| 生成实体的包      | `gazebo_ros`                                         | `ros_gz_sim`                                    |
+| ROS-Gazebo 桥接   | `gazebo_ros_pkgs`                                    | `ros_gz_bridge`                                 |
+| ros2_control 插件 | `gazebo_ros2_control`                                | `gz_ros2_control`                               |
+| 安装命令          | `sudo apt install ros-${ROS_DISTRO}-gazebo-ros-pkgs` | `sudo apt install ros-${ROS_DISTRO}-ros-gz-sim` |
 
 ---
 
@@ -39,14 +39,15 @@
 
 ### 3.1 launch 文件路径
 
-| 版本 | 启动文件 |
-| :--- | :--- |
-| Classic | `gazebo_ros/launch/gazebo.launch.py` |
+| 版本     | 启动文件                             |
+| :------- | :----------------------------------- |
+| Classic  | `gazebo_ros/launch/gazebo.launch.py` |
 | Harmonic | `ros_gz_sim/launch/gz_sim.launch.py` |
 
 ### 3.2 世界文件参数
 
 **Classic**：
+
 ```python
 IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
@@ -60,6 +61,7 @@ IncludeLaunchDescription(
 ```
 
 **Harmonic**：
+
 ```python
 IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
@@ -80,14 +82,15 @@ IncludeLaunchDescription(
 
 ### 4.1 节点定义
 
-| 版本 | package | executable |
-| :--- | :--- | :--- |
-| Classic | `gazebo_ros` | `spawn_entity.py` |
-| Harmonic | `ros_gz_sim` | `create` |
+| 版本     | package      | executable        |
+| :------- | :----------- | :---------------- |
+| Classic  | `gazebo_ros` | `spawn_entity.py` |
+| Harmonic | `ros_gz_sim` | `create`          |
 
 ### 4.2 参数差异
 
 **Classic**：
+
 ```python
 Node(
     package="gazebo_ros",
@@ -97,6 +100,7 @@ Node(
 ```
 
 **Harmonic**：
+
 ```python
 Node(
     package="ros_gz_sim",
@@ -115,10 +119,10 @@ Node(
 
 ### 5.1 扩展名与 SDF 版本
 
-| 版本 | 扩展名 | SDF 版本 | 根结构 |
-| :--- | :--- | :--- | :--- |
-| Classic | `.world` | 1.6 / 1.7 | `<sdf version="1.6"><world>` |
-| Harmonic | `.sdf` | 1.9+（本仓库用 1.11） | `<sdf version="1.11"><world>` |
+| 版本     | 扩展名   | SDF 版本              | 根结构                        |
+| :------- | :------- | :-------------------- | :---------------------------- |
+| Classic  | `.world` | 1.6 / 1.7             | `<sdf version="1.6"><world>`  |
+| Harmonic | `.sdf`   | 1.9+（本仓库用 1.11） | `<sdf version="1.11"><world>` |
 
 > Classic 的 `.world` 本质也是 SDF，但版本低、默认行为不同；Harmonic 只认 `.sdf`，且许多老写法（如不写系统插件）会导致加载异常。
 
@@ -204,6 +208,7 @@ Harmonic 内部使用 `gz-transport` 话题，ROS 2 侧通过 `ros_gz_bridge` �
 **Classic**：由 Gazebo 原生插件直接发布/订阅 ROS 话题，无需桥接。
 
 **Harmonic**：
+
 ```python
 arguments=[
     # GZ → ROS: 仿真时钟
@@ -292,6 +297,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ```
 
 > **差异点**：
+>
 > - Classic 用 `wheel_diameter`（直径），Harmonic 用 `wheel_radius`（半径）；
 > - Classic 的 diff_drive 自带关节状态发布，Harmonic 需要额外添加 `gz-sim-joint-state-publisher-system`。
 
@@ -302,6 +308,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ### 7.1 激光雷达
 
 **Classic**：
+
 ```xml
 <gazebo reference="laser_link">
   <sensor type="ray" name="laserscan">
@@ -314,6 +321,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ```
 
 **Harmonic**：
+
 ```xml
 <gazebo reference="laser_link">
   <sensor name="laserscan" type="gpu_lidar">
@@ -343,6 +351,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ```
 
 > **差异点**：
+>
 > - Classic 传感器类型为 `ray`，Harmonic 为 `gpu_lidar`；
 > - Classic 需要单独 `<plugin>` 把数据转 ROS，Harmonic 通过 `<topic>` 直接发布 gz-transport 话题，再由 `ros_gz_bridge` 桥接；
 > - Harmonic 需要 `<frame_id>` 和 `<gz_frame_id>`。
@@ -350,6 +359,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ### 7.2 IMU
 
 **Classic**：
+
 ```xml
 <gazebo reference="imu_link">
   <sensor type="imu" name="imu_sensor">
@@ -361,6 +371,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ```
 
 **Harmonic**：
+
 ```xml
 <gazebo reference="imu_link">
   <sensor name="imu_sensor" type="imu">
@@ -382,6 +393,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ### 7.3 深度/RGBD 相机
 
 **Classic**：
+
 ```xml
 <gazebo reference="camera_link">
   <sensor type="depth" name="camera_sensor">
@@ -393,6 +405,7 @@ Node(..., parameters=[{"use_sim_time": True}])
 ```
 
 **Harmonic**：
+
 ```xml
 <gazebo reference="camera_link">
   <sensor name="camera_sensor" type="rgbd_camera">
@@ -421,10 +434,10 @@ Node(..., parameters=[{"use_sim_time": True}])
 
 ### 8.1 硬件插件
 
-| 版本 | hardware plugin | Gazebo 插件 |
-| :--- | :--- | :--- |
-| Classic | `gazebo_ros2_control/GazeboSystem` | `libgazebo_ros2_control.so` |
-| Harmonic | `gz_ros2_control/GazeboSimSystem` | `gz_ros2_control-system` |
+| 版本     | hardware plugin                    | Gazebo 插件                 |
+| :------- | :--------------------------------- | :-------------------------- |
+| Classic  | `gazebo_ros2_control/GazeboSystem` | `libgazebo_ros2_control.so` |
+| Harmonic | `gz_ros2_control/GazeboSimSystem`  | `gz_ros2_control-system`    |
 
 ### 8.2 Harmonic 配置示例
 
@@ -468,12 +481,13 @@ ros2 run twist_stamper twist_stamper \
 
 `fishbot_description` 功能包提供两种控制方式，**不能同时启用**：
 
-| 方式 | 控制源 | 是否需要桥接 `/cmd_vel` `/odom` `/tf` `/joint_states` |
-| :--- | :--- | :--- |
-| A. Gazebo 原生差速插件 | `gz-sim-diff-drive-system` | 需要 |
-| B. ros2_control | `diff_drive_controller` | 不需要 |
+| 方式                   | 控制源                     | 是否需要桥接 `/cmd_vel` `/odom` `/tf` `/joint_states` |
+| :--------------------- | :------------------------- | :---------------------------------------------------- |
+| A. Gazebo 原生差速插件 | `gz-sim-diff-drive-system` | 需要                                                  |
+| B. ros2_control        | `diff_drive_controller`    | 不需要                                                |
 
 切换步骤：
+
 1. 在 `urdf/fishbot/fishbot.urdf.xacro` 中切换 include 的插件文件；
 2. 在 `launch/gazebo_sim.launch.py` 中切换桥接话题和是否启动控制器 spawner；
 3. 重新 `colcon build` 后启动。
@@ -484,37 +498,37 @@ ros2 run twist_stamper twist_stamper \
 
 ## 十一、速查表
 
-| 功能 | Classic | Harmonic |
-| :--- | :--- | :--- |
-| 启动包 | `gazebo_ros` | `ros_gz_sim` |
-| 启动文件 | `gazebo.launch.py` | `gz_sim.launch.py` |
-| 世界参数 | `("world", path)` | `("gz_args", "-r -v 4 path")` |
-| spawn 包/可执行 | `gazebo_ros/spawn_entity.py` | `ros_gz_sim/create` |
-| spawn 实体名参数 | `-entity` | `-name` |
-| 差速插件 | `libgazebo_ros_diff_drive.so` | `gz-sim-diff-drive-system` |
-| 差速直径/半径 | `wheel_diameter` | `wheel_radius` |
-| 激光雷达类型 | `ray` | `gpu_lidar` |
-| 深度相机类型 | `depth` | `rgbd_camera` |
-| ros2_control 硬件 | `gazebo_ros2_control/GazeboSystem` | `gz_ros2_control/GazeboSimSystem` |
-| ros2_control Gazebo 插件 | `libgazebo_ros2_control.so` | `gz_ros2_control-system` |
+| 功能                     | Classic                            | Harmonic                          |
+| :----------------------- | :--------------------------------- | :-------------------------------- |
+| 启动包                   | `gazebo_ros`                       | `ros_gz_sim`                      |
+| 启动文件                 | `gazebo.launch.py`                 | `gz_sim.launch.py`                |
+| 世界参数                 | `("world", path)`                  | `("gz_args", "-r -v 4 path")`     |
+| spawn 包/可执行          | `gazebo_ros/spawn_entity.py`       | `ros_gz_sim/create`               |
+| spawn 实体名参数         | `-entity`                          | `-name`                           |
+| 差速插件                 | `libgazebo_ros_diff_drive.so`      | `gz-sim-diff-drive-system`        |
+| 差速直径/半径            | `wheel_diameter`                   | `wheel_radius`                    |
+| 激光雷达类型             | `ray`                              | `gpu_lidar`                       |
+| 深度相机类型             | `depth`                            | `rgbd_camera`                     |
+| ros2_control 硬件        | `gazebo_ros2_control/GazeboSystem` | `gz_ros2_control/GazeboSimSystem` |
+| ros2_control Gazebo 插件 | `libgazebo_ros2_control.so`        | `gz_ros2_control-system`          |
 
 ---
 
 ## 十二、常见报错速查（初学者高频）
 
-| 报错现象 | 原因 | 解法 |
-| :--- | :--- | :--- |
-| `spawn_entity.py: command not found` | 用了 Classic 的 `spawn_entity.py` 可执行文件 | 改用 `ros_gz_sim` 的 `create`，`-entity` 改 `-name` |
-| `package 'gazebo_ros' not found` | Jazzy 没有 `gazebo_ros` 包 | 安装 `ros-jazzy-ros-gz-sim`，launch 改用 `ros_gz_sim` |
-| `libgazebo_ros2_control.so: cannot open shared object file` | 用了 Classic 的 ros2_control 插件 | 改用 `gz_ros2_control-system` + `gz_ros2_control/GazeboSimSystem` |
-| `[Err] [ModelDatabase] model://xxx not found` | Classic 世界的 `model://` 资源在 Harmonic 中不存在 | 改为全内联模型定义（见"世界文件迁移"） |
-| 无 `/clock` 话题 / TF 时间戳跳跃 | 未桥接 `/clock` 或未开 `use_sim_time` | 桥接 `/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock` 并设置 `use_sim_time: True` |
-| 关节被多个控制器争夺，小车不动 | 同时启用了原生差速插件与 ros2_control | 二选一（见"控制方式切换"） |
-| 发布 `cmd_vel` 但小车不动 | Jazzy 的 `diff_drive_controller` 默认收 `TwistStamped` | 加 `twist_stamper` 转换（见"ros2_control"章） |
-| `Failed to load plugin [gz-sim-sensors-system]`，传感器无数据 | Harmonic 世界/URDF 缺系统插件 | 显式声明 `gz-sim-physics-system`、`gz-sim-sensors-system` 等 |
+| 报错现象                                                      | 原因                                                   | 解法                                                                            |
+| :------------------------------------------------------------ | :----------------------------------------------------- | :------------------------------------------------------------------------------ |
+| `spawn_entity.py: command not found`                          | 用了 Classic 的 `spawn_entity.py` 可执行文件           | 改用 `ros_gz_sim` 的 `create`，`-entity` 改 `-name`                             |
+| `package 'gazebo_ros' not found`                              | Jazzy 没有 `gazebo_ros` 包                             | 安装 `ros-jazzy-ros-gz-sim`，launch 改用 `ros_gz_sim`                           |
+| `libgazebo_ros2_control.so: cannot open shared object file`   | 用了 Classic 的 ros2_control 插件                      | 改用 `gz_ros2_control-system` + `gz_ros2_control/GazeboSimSystem`               |
+| `[Err] [ModelDatabase] model://xxx not found`                 | Classic 世界的 `model://` 资源在 Harmonic 中不存在     | 改为全内联模型定义（见"世界文件迁移"）                                          |
+| 无 `/clock` 话题 / TF 时间戳跳跃                              | 未桥接 `/clock` 或未开 `use_sim_time`                  | 桥接 `/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock` 并设置 `use_sim_time: True` |
+| 关节被多个控制器争夺，小车不动                                | 同时启用了原生差速插件与 ros2_control                  | 二选一（见"控制方式切换"）                                                      |
+| 发布 `cmd_vel` 但小车不动                                     | Jazzy 的 `diff_drive_controller` 默认收 `TwistStamped` | 加 `twist_stamper` 转换（见"ros2_control"章）                                   |
+| `Failed to load plugin [gz-sim-sensors-system]`，传感器无数据 | Harmonic 世界/URDF 缺系统插件                          | 显式声明 `gz-sim-physics-system`、`gz-sim-sensors-system` 等                    |
 
 ---
 
-*笔记整理日期：2026年7月；2026年8月补充 EOL 背景、世界文件迁移、use_sim_time 与报错速查*
+笔记整理日期：2026年7月；2026年8月补充 EOL 背景、世界文件迁移、use_sim_time 与报错速查
 
 参考：ROS 2 Jazzy 官方安装文档、Gazebo Harmonic 官方文档、原书《ROS2 机器人开发》配套仓库 fishros/ros2bookcode
