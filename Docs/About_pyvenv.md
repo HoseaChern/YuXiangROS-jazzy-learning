@@ -13,7 +13,9 @@ sudo apt update
 sudo apt install python3-venv python3-pip
 ```
 
-> ⚠️ 不装 `python3-venv` 会报错：`The virtual environment was not created successfully because ensurepip is not available`
+> ⚠️ 不装 `python3-venv`
+> 会报错：`The virtual environment was not created successfully because ensurepip
+> is not available`
 
 ---
 
@@ -123,7 +125,8 @@ chpwd_functions+=(auto_venv)
 ### 一句话总结
 
 - **`venv`**：轻量、标准、与系统 Python 配合好，适合 ROS 2 等依赖系统 Python 的场景。
-- **`conda/mamba`**：功能强大、管理多版本和非 Python 依赖方便，但和 ROS 2 的系统 Python 容易打架，**不推荐在 ROS 2 开发中使用**。
+- **`conda/mamba`**：功能强大、管理多版本和非 Python 依赖方便，但和 ROS 2 的系统 Python 容易打架，**不推荐在
+  ROS 2 开发中使用**。
 
 ---
 
@@ -190,11 +193,14 @@ rm -rf .venv
 
 ### 坑 1：`ros2 run` 用系统 Python，找不到 venv 里的包
 
-**现象**：`python3 -c "import face_recognition"` 成功，但 `ros2 run` 报 `ModuleNotFoundError`。
+**现象**：`python3 -c "import face_recognition"` 成功，但 `ros2 run`
+报 `ModuleNotFoundError`。
 
-**原因**：`ros2 run` 通过 launcher 脚本启动节点，脚本的 shebang 指向 `/usr/bin/python3`（系统 Python），而非 venv 的 Python。
+**原因**：`ros2 run` 通过 launcher 脚本启动节点，脚本的 shebang 指向 `/usr/bin/python3`（系统
+Python），而非 venv 的 Python。
 
-**解决**：venv 里必须安装自己的 `colcon`，确保 `which colcon` 指向 `.venv/bin/colcon`，这样编译时 setuptools 会用 venv Python 生成 shebang。
+**解决**：venv 里必须安装自己的 `colcon`，确保 `which colcon` 指向 `.venv/bin/colcon`，这样编译时
+setuptools 会用 venv Python 生成 shebang。
 
 ```bash
 source .venv/bin/activate
@@ -209,9 +215,12 @@ which colcon  # 确认指向 venv
 
 ### 坑 2：工作空间路径带空格，shebang 断裂
 
-**现象**：编译成功，launcher 脚本存在，但 `ros2 run` 报 `FileNotFoundError` 或 `Exec format error`。
+**现象**：编译成功，launcher 脚本存在，但 `ros2 run` 报 `FileNotFoundError`
+或 `Exec format error`。
 
-**原因**：setuptools 生成的 shebang 是绝对路径，如 `#!/home/user/4.2 Service_ws/.venv/bin/python3`。Linux 内核解析 shebang 时以空格分隔，把 `Service_ws/.venv/bin/python3` 当成参数，导致解释器路径断裂。
+**原因**：setuptools 生成的 shebang 是绝对路径，
+如 `#!/home/user/4.2 Service_ws/.venv/bin/python3`。Linux 内核解析 shebang 时以空格分隔，
+把 `Service_ws/.venv/bin/python3` 当成参数，导致解释器路径断裂。
 
 **解决**：
 
@@ -231,11 +240,12 @@ pip install face_recognition colcon-common-extensions
 
 ---
 
-### 坑 3：`colcon build --cmake-args -DPYTHON_EXECUTABLE=$(which python3)` 对 Python 包无效
+### 坑 3：`colcon build` 的 `PYTHON_EXECUTABLE` 参数对 Python 包无效
 
 **现象**：加了 `PYTHON_EXECUTABLE` 参数，重新编译后 launcher shebang 还是 `/usr/bin/python3`。
 
-**原因**：`PYTHON_EXECUTABLE` 只影响 CMake 编译的 C++ 包，不影响 `ament_python` 类型包的 setuptools 入口脚本生成。
+**原因**：`PYTHON_EXECUTABLE` 只影响 CMake 编译的 C++ 包，不影响 `ament_python` 类型包的
+setuptools 入口脚本生成。
 
 **解决**：根本办法是让 `colcon` 本身运行在 venv Python 上（见坑 1），而不是传 CMake 参数。
 
@@ -243,7 +253,8 @@ pip install face_recognition colcon-common-extensions
 
 ### 坑 4：`pip install --ignore-installed` 后 setuptools 版本冲突
 
-**现象**：安装 colcon 时，依赖解析提示 `colcon-core 0.21.0 requires setuptools<80`，但 venv 里装的是 79.0.1。
+**现象**：安装 colcon 时，依赖解析提示 `colcon-core 0.21.0 requires setuptools<80`，但 venv
+里装的是 79.0.1。
 
 **处理**：79.0.1 已满足 `<80`，属于警告级别，不影响使用。若后续遇到兼容问题，可显式降级：
 
@@ -293,4 +304,5 @@ ros2 run demo_python_service learn_face_detect
 
 ---
 
-> **附**：若需在 `.zshrc` 中配置别名，注意 `export PATH` 要放在 `source /opt/ros/jazzy/setup.zsh` **之后**，否则 ROS 2 的 setup 可能重置 PATH 顺序。
+> **附**：若需在 `.zshrc` 中配置别名，注意 `export PATH`
+> 要放在 `source /opt/ros/jazzy/setup.zsh` **之后**，否则 ROS 2 的 setup 可能重置 PATH 顺序。

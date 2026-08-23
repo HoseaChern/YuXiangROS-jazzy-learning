@@ -190,15 +190,16 @@ x = 1 + 2
 
 ## 五、与 Pylance 的分工
 
-| 功能        | Ruff     | Pylance  |
-| ----------- | -------- | -------- |
-| 代码格式化  | ✅ 负责   | ❌ 不负责 |
-| Import 排序 | ✅ 负责   | ❌ 不负责 |
-| 类型检查    | ❌ 不负责 | ✅ 负责   |
-| 未定义变量  | ❌ 不负责 | ✅ 负责   |
-| 智能提示    | ❌ 不负责 | ✅ 负责   |
+| 功能 | Ruff | Pylance |
+| --- | --- | --- |
+| 代码格式化 | ✅ 负责 | ❌ 不负责 |
+| Import 排序 | ✅ 负责 | ❌ 不负责 |
+| 类型检查 | ❌ 不负责 | ✅ 负责 |
+| 未定义变量 | ❌ 不负责 | ✅ 负责 |
+| 智能提示 | ❌ 不负责 | ✅ 负责 |
 
 > 如果 Pylance 和 Ruff 对 `unused import` 重复提示，可在 VS Code 设置中关闭 Pylance 的该项诊断：
+>
 > ```json
 > "python.analysis.diagnosticSeverityOverrides": {
 >     "reportUnusedImport": "none"

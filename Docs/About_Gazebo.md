@@ -8,16 +8,21 @@
 
 ## 一、两个版本是什么关系？
 
-- **Gazebo Classic**：早期版本（如 Gazebo 11），基于 OGRE 1.x，ROS 1/ROS 2 早期教程大量使用。ROS 2 Jazzy 不再默认支持。
-- **Gazebo Sim / Harmonic**：Gazebo 的新一代版本（Gazebo Sim 8 对应 Harmonic），基于 OGRE 2.x，内部通信从 ROS 话题切换到 `gz-transport`，与 ROS 2 通过 `ros_gz` 桥接包交互。
+- **Gazebo Classic**：早期版本（如 Gazebo 11），基于 OGRE 1.x，ROS 1/ROS 2 早期教程大量使用。ROS 2
+  Jazzy 不再默认支持。
+- **Gazebo Sim / Harmonic**：Gazebo 的新一代版本（Gazebo Sim 8 对应 Harmonic），基于 OGRE 2.
+  x，内部通信从 ROS 话题切换到 `gz-transport`，与 ROS 2 通过 `ros_gz` 桥接包交互。
 
 > **关键结论**：Jazzy 官方推荐搭配 **Gazebo Harmonic**，Classic 的写法不能直接复制粘贴。
 
 ### 1.1 为什么必须迁移：Gazebo Classic 已停止维护
 
-- **时间线**：Gazebo Classic（Gazebo 9/11）已于 **2025 年 1 月正式停止维护（EOL）**，官方不再提供新版本、安全更新与 bug 修复。
-- **Ubuntu 24.04 的现实**：`apt` 官方源中**只有 Harmonic**，Classic 已无法直接安装。若坚持使用 Classic，需走旧版 PPA 或源码编译，依赖冲突多、风险大，对初学者极不友好。
-- **教程生态断层**：市面绝大多数教程、书籍、视频（包括本仓库参考的《ROS2 机器人开发》）都基于 humble + Classic，新手照抄必然踩坑——这正是本笔记与 `YuXiangROS` 各章适配代码存在的意义。
+- **时间线**：Gazebo Classic（Gazebo 9/11）已于 **2025 年 1 月正式停止维护（EOL）**，官方不再提供新版本、
+  安全更新与 bug 修复。
+- **Ubuntu 24.04 的现实**：`apt` 官方源中**只有 Harmonic**，Classic 已无法直接安装。若坚持使用
+  Classic，需走旧版 PPA 或源码编译，依赖冲突多、风险大，对初学者极不友好。
+- **教程生态断层**：市面绝大多数教程、书籍、视频（包括本仓库参考的《ROS2 机器人开发》）都基于 humble + Classic，
+  新手照抄必然踩坑——这正是本笔记与 `YuXiangROS` 各章适配代码存在的意义。
 
 > 本仓库在 Ubuntu 24.04 + Jazzy + Harmonic 下已验证可用，代码中保留了 `[旧版: xxx]` 对照注释，供迁移时对照。
 
@@ -51,7 +56,8 @@
 ```python
 IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
-        [get_package_share_directory("gazebo_ros"), "/launch/gazebo.launch.py"]
+        [get_package_share_directory("gazebo_ros"), "/launch/gazebo.launch.
+py"]
     ),
     launch_arguments=[
         ("world", "<world_path>"),
@@ -65,7 +71,8 @@ IncludeLaunchDescription(
 ```python
 IncludeLaunchDescription(
     PythonLaunchDescriptionSource(
-        [get_package_share_directory("ros_gz_sim"), "/launch/gz_sim.launch.py"]
+        [get_package_share_directory("ros_gz_sim"), "/launch/gz_sim.launch.
+py"]
     ),
     launch_arguments=[
         # -r: 启动即运行仿真; -v 4: verbose 级别
@@ -124,11 +131,14 @@ Node(
 | Classic  | `.world` | 1.6 / 1.7             | `<sdf version="1.6"><world>`  |
 | Harmonic | `.sdf`   | 1.9+（本仓库用 1.11） | `<sdf version="1.11"><world>` |
 
-> Classic 的 `.world` 本质也是 SDF，但版本低、默认行为不同；Harmonic 只认 `.sdf`，且许多老写法（如不写系统插件）会导致加载异常。
+> Classic 的 `.world` 本质也是 SDF，但版本低、默认行为不同；Harmonic 只认 `.sdf`，且许多老写法（如不写系统插件）
+> 会导致加载异常。
 
 ### 5.2 资源引用方式差异（最容易踩的坑）
 
-**Classic**：通过 `<include><uri>model://xxx</uri></include>` 引用模型数据库，或直接引用 `model://cafe_table/meshes/cafe_table.dae` 网格（原书 `custom_room.world` 即此写法）：
+**Classic**：通过 `<include><uri>model://xxx</uri></include>` 引用模型数据库，
+或直接引用 `model://cafe_table/meshes/cafe_table.dae` 网格（原书 `custom_room.world`
+即此写法）：
 
 ```xml
 <sdf version="1.6">
@@ -142,7 +152,9 @@ Node(
 </sdf>
 ```
 
-**Harmonic**：不再自动附带模型数据库，`model://` 引用常因资源缺失而失败。本仓库的 `custom_room.sdf` 采用**全内联**写法——每个模型（地面、墙、家具）都用 `<model>` + `<link>` + `<geometry><box>` 显式定义，并把系统插件、场景、光照写全：
+**Harmonic**：不再自动附带模型数据库，`model://` 引用常因资源缺失而失败。本仓库的 `custom_room.sdf`
+采用**全内联**写法——每个模型（地面、墙、家具）都用 `<model>` + `<link>` + `<geometry><box>` 显式定义，
+并把系统插件、场景、光照写全：
 
 ```xml
 <sdf version="1.11">
@@ -151,8 +163,10 @@ Node(
     <physics name="1ms" type="ignored">
       <max_step_size>0.001</max_step_size>
     </physics>
-    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics" />
-    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster" />
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"
+/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems:
+:SceneBroadcaster" />
     <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
       <render_engine>ogre2</render_engine>
     </plugin>
@@ -169,8 +183,10 @@ Node(
       <static>true</static>
       <link name="wall_north">
         <pose>0.0 7.6 1.5 0 0 0</pose>
-        <visual name="visual"><geometry><box><size>20.4 0.2 3.0</size></box></geometry></visual>
-        <collision name="collision"><geometry><box><size>20.4 0.2 3.0</size></box></geometry></collision>
+        <visual name="visual"><geometry><box><size>20.4 0.2 3.
+0</size></box></geometry></visual>
+        <collision name="collision"><geometry><box><size>20.4 0.2 3.
+0</size></box></geometry></collision>
       </link>
       <!-- ... 其余墙、家具同理 ... -->
     </model>
@@ -182,11 +198,14 @@ Node(
 
 - [ ] 扩展名改为 `.sdf`，`<sdf version>` 升级到 1.9+（本仓库用 1.11）
 - [ ] 检查所有 `model://` 引用：确认资源本地存在，否则改为全内联定义
-- [ ] 显式声明系统插件：`gz-sim-physics-system`、`gz-sim-scene-broadcaster-system`、`gz-sim-sensors-system` 等
+- [ ]
+  显式声明系统插件：`gz-sim-physics-system`、`gz-sim-scene-broadcaster-system`、`gz-sim-s
+  ensors-system` 等
 - [ ] 用 `gz sim -s <world.sdf>`（无 GUI 模式）验证世界能否正常加载
 - [ ] 注意 `<physics>` 标签在 SDF 1.11 的取值变化（`type="ignored"` 等）
 
-> 完整可运行的迁移实例：`YuXiangROS/Chap6/RViz_Gazebo_ws/src/fishbot_description/world/custom_room.sdf`（三室一厅室内世界，带家具碰撞体，可直接用于导航/避障仿真）。
+> 完整可运行的迁移实例：`YuXiangROS/Chap6/RViz_Gazebo_ws/src/fishbot_description/world/cu
+> stom_room.sdf`（三室一厅室内世界，带家具碰撞体，可直接用于导航/避障仿真）。
 
 ---
 
@@ -228,11 +247,13 @@ arguments=[
 ]
 ```
 
-> **重要冲突**：若使用 `ros2_control`，`/cmd_vel`、`/odom`、`/tf`、`/joint_states` 由控制器直接接管，**不能再桥接**，否则会出现话题冲突。
+> **重要冲突**：若使用 `ros2_control`，`/cmd_vel`、`/odom`、`/tf`、`/joint_states`
+> 由控制器直接接管，**不能再桥接**，否则会出现话题冲突。
 
 ### 5.3 别忘了 use_sim_time
 
-Harmonic 通过桥接发布仿真时钟 `/clock`，但**只有开启 `use_sim_time` 的节点才会使用它**。若未开启，TF 时间戳与真实时钟漂移，会出现 TF 报错、传感器数据乱序等诡异问题。
+Harmonic 通过桥接发布仿真时钟 `/clock`，但**只有开启 `use_sim_time` 的节点才会使用它**。若未开启，TF
+时间戳与真实时钟漂移，会出现 TF 报错、传感器数据乱序等诡异问题。
 
 ```python
 # 为节点（或节点组）设置
@@ -244,7 +265,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 /**: ros__parameters: use_sim_time: true
 ```
 
-> 本仓库所有仿真 launch（Chap6/7/9 的 `gazebo_sim.launch.py`、导航参数）均开启 `use_sim_time`；真机运行时才关闭。
+> 本仓库所有仿真 launch（Chap6/7/9 的 `gazebo_sim.launch.py`、导航参数）均开启 `use_sim_time`；
+> 真机运行时才关闭。
 
 ---
 
@@ -254,7 +276,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 
 ```xml
 <gazebo>
-  <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+  <plugin name="differential_drive_controller"
+filename="libgazebo_ros_diff_drive.so">
     <ros>
       <namespace>/</namespace>
       <remapping>cmd_vel:=cmd_vel</remapping>
@@ -273,7 +296,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 
 ```xml
 <gazebo>
-  <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+  <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::
+DiffDrive">
     <topic>/cmd_vel</topic>
     <odom_topic>/odom</odom_topic>
     <tf_topic>/tf</tf_topic>
@@ -299,7 +323,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 > **差异点**：
 >
 > - Classic 用 `wheel_diameter`（直径），Harmonic 用 `wheel_radius`（半径）；
-> - Classic 的 diff_drive 自带关节状态发布，Harmonic 需要额外添加 `gz-sim-joint-state-publisher-system`。
+> - - Classic 的 diff_drive 自带关节状态发布，Harmonic
+>   需要额外添加 `gz-sim-joint-state-publisher-system`。
 
 ---
 
@@ -312,7 +337,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 ```xml
 <gazebo reference="laser_link">
   <sensor type="ray" name="laserscan">
-    <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_laser.so">
+    <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_laser.
+so">
       <topic_name>/scan</topic_name>
       <frame_name>laser_link</frame_name>
     </plugin>
@@ -353,7 +379,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 > **差异点**：
 >
 > - Classic 传感器类型为 `ray`，Harmonic 为 `gpu_lidar`；
-> - Classic 需要单独 `<plugin>` 把数据转 ROS，Harmonic 通过 `<topic>` 直接发布 gz-transport 话题，再由 `ros_gz_bridge` 桥接；
+> - - Classic 需要单独 `<plugin>` 把数据转 ROS，Harmonic 通过 `<topic>` 直接发布
+>   gz-transport 话题，再由 `ros_gz_bridge` 桥接；
 > - Harmonic 需要 `<frame_id>` 和 `<gz_frame_id>`。
 
 ### 7.2 IMU
@@ -382,7 +409,8 @@ Node(..., parameters=[{"use_sim_time": True}])
     <always_on>true</always_on>
     <imu>
       <angular_velocity>
-        <x><noise type="gaussian"><mean>0.0</mean><stddev>2e-4</stddev></noise></x>
+        <x><noise type="gaussian"><mean>0.
+0</mean><stddev>2e-4</stddev></noise></x>
         <!-- y, z 同理 -->
       </angular_velocity>
     </imu>
@@ -426,7 +454,8 @@ Node(..., parameters=[{"use_sim_time": True}])
 </gazebo>
 ```
 
-> **差异点**：Classic 用 `depth` 类型 + ROS 插件，Harmonic 用 `rgbd_camera` 类型，直接输出彩色图、深度图、点云。
+> **差异点**：Classic 用 `depth` 类型 + ROS 插件，Harmonic 用 `rgbd_camera` 类型，直接输出彩色图、
+> 深度图、点云。
 
 ---
 
@@ -459,14 +488,17 @@ Node(..., parameters=[{"use_sim_time": True}])
 <gazebo>
   <plugin filename="gz_ros2_control-system"
     name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-    <parameters>$(find fishbot_description)/config/ros2_controller/controllers.yaml</parameters>
+    <parameters>$(find
+fishbot_description)/config/ros2_controller/controllers.yaml</parameters>
   </plugin>
 </gazebo>
 ```
 
 ### 8.3 Jazzy 特别提醒
 
-Jazzy 的 `diff_drive_controller` 已移除 `use_stamped_vel` 参数，**强制订阅 `geometry_msgs/msg/TwistStamped`**。如果键盘节点发布的是 `Twist`，需要通过 `twist_stamper` 转换：
+Jazzy 的 `diff_drive_controller` 已移除 `use_stamped_vel` 参数，
+**强制订阅 `geometry_msgs/msg/TwistStamped`**。如果键盘节点发布的是 `Twist`，
+需要通过 `twist_stamper` 转换：
 
 ```bash
 ros2 run twist_stamper twist_stamper \
@@ -531,4 +563,5 @@ ros2 run twist_stamper twist_stamper \
 
 笔记整理日期：2026年7月；2026年8月补充 EOL 背景、世界文件迁移、use_sim_time 与报错速查
 
-参考：ROS 2 Jazzy 官方安装文档、Gazebo Harmonic 官方文档、原书《ROS2 机器人开发》配套仓库 fishros/ros2bookcode
+参考：ROS 2 Jazzy 官方安装文档、Gazebo Harmonic 官方文档、原书《ROS2 机器人开发》配套仓库
+fishros/ros2bookcode

@@ -43,7 +43,8 @@
 | **智能性**   | 较低，按规则执行       | **较高**，会尝试保留/删除/降级包的组合方案 |
 | **交互提示** | 较少（Y/n 确认）       | 丰富（列出多种解决策略供选择）             |
 
-> **aptitude 优势**：遇到复杂依赖冲突时，aptitude 能给出多个可行方案（如"删除 A 保留 B"、"降级 C"等），而 apt 往往直接失败。
+> **aptitude 优势**：遇到复杂依赖冲突时，aptitude 能给出多个可行方案（如"删除 A 保留 B"、"降级 C"等），而 apt
+> 往往直接失败。
 
 ### 3.2 通配符支持
 
@@ -53,7 +54,8 @@
 | **正则搜索**         | 不支持                                              | `aptitude search '?name(^pkg-)'`      |
 | **描述搜索**         | `apt search <keyword>`（模糊匹配）                  | `aptitude search <keyword>`（更灵活） |
 
-> **注意**：在 zsh 中使用 `apt install 'pkg-*'` 时，**必须加引号**，否则 zsh 的 glob 扩展会导致 `no matches found` 错误。
+> **注意**：在 zsh 中使用 `apt install 'pkg-*'` 时，**必须加引号**，否则 zsh 的 glob
+> 扩展会导致 `no matches found` 错误。
 
 ### 3.3 历史记录与撤销
 

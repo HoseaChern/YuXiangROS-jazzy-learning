@@ -111,4 +111,5 @@ dot -Tpng robot.gv -o robot.png
 
 ---
 
-> **一句话总结**：`.gv` 是文本图描述文件，Ubuntu 上装 `graphviz` 后用 `dot -Tpng` 转图片，或在 VS Code 装 **Graphviz Interactive Preview** 直接预览。
+> **一句话总结**：`.gv` 是文本图描述文件，Ubuntu 上装 `graphviz` 后用 `dot -Tpng` 转图片，或在 VS Code
+> 装 **Graphviz Interactive Preview** 直接预览。

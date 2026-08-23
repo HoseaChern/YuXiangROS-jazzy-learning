@@ -60,7 +60,8 @@ git status                    # 忽略规则生效后，被忽略文件不再显
 git check-ignore -v <文件>    # 排查某个文件被哪条规则忽略
 ```
 
-> 注意：`.gitignore` 只对**未跟踪**文件生效；已被 `git add` 过的文件需 `git rm --cached <文件>` 才能取消跟踪。
+> 注意：`.gitignore` 只对**未跟踪**文件生效；已被 `git add` 过的文件需 `git rm --cached <文件>`
+> 才能取消跟踪。
 
 ### 1.4 查看修改内容（原书 5.6.1）
 
@@ -146,8 +147,10 @@ git remote -v                    # 查看远程地址
 - **破坏性变更**：加 `!` 或 footer 写 `BREAKING CHANGE: xxx`
 - **正文（可选）**：复杂改动在空一行后补充 why / how
 - 本仓库历史示例：
-  - `chore: initial commit - ROS2 Jazzy learning workspace adapted from "ROS2 Robot Development"`
-  - `docs: add network proxy config & src/ subdir filter notes to PIO CLI guide`
+  - `chore: initial commit - ROS2 Jazzy learning workspace adapted from "ROS2
+    Robot Development"`
+  - `docs: add network proxy config & src/ subdir filter notes to PIO CLI guid
+    e`
   - `style: rename md notes, to remove space and lint warn`
 
 ---
@@ -184,7 +187,9 @@ ROS/
 
 ## 4. git 的 HTTP 代理与 SSH 配置（push 与 clone）
 
-> 背景：国内直连 GitHub 的 clone / push 常超时或龟速。git 有两条网络通道 —— **HTTPS**（走 `git config` 或环境变量）和 **SSH**（走 `~/.ssh/config`），两条通道的代理配置互不相干，都要分别处理。
+> 背景：国内直连 GitHub 的 clone / push 常超时或龟速。git 有两条网络通道 ——
+> **HTTPS**（走 `git config` 或环境变量）和 **SSH**（走 `~/.ssh/config`），两条通道的代理配置互不相干，
+> 都要分别处理。
 
 ### 4.1 通道一：HTTPS（HTTP 代理，已配置 ✅）
 
@@ -220,7 +225,8 @@ cat ~/.ssh/id_ed25519.pub                # 复制公钥
 #### 第二步：验证（未走代理时可能卡住/失败）
 
 ```bash
-ssh -T git@github.com    # 成功回 "Hi <用户名>! You've successfully authenticated..."
+ssh -T git@github.com    # 成功回 "Hi <用户名>! You've successfully authenticated...
+"
 ssh -T git@gitee.com
 ```
 
@@ -235,7 +241,8 @@ Host github.com
     # SOCKS5 写法：ProxyCommand nc -X 5 -x 127.0.0.1:7897 %h %p
 ```
 
-> `nc` 为 OpenBSD netcat（`sudo apt install netcat-openbsd`）；不想装 nc 也可用 `connect-proxy`：`ProxyCommand connect -H 127.0.0.1:7897 %h %p`。
+> `nc` 为 OpenBSD netcat（`sudo apt install netcat-openbsd`）；不想装 nc
+> 也可用 `connect-proxy`：`ProxyCommand connect -H 127.0.0.1:7897 %h %p`。
 
 ##### 可选：走 GitHub 的 443 端口（防火墙场景）
 
@@ -264,7 +271,8 @@ ss -tlnp | grep 127.0.0.1                # 找本机代理真实端口
 curl -x http://127.0.0.1:7897 -I https://github.com   # 验证端口可用
 ```
 
-- 报错 `Failed to connect to 127.0.0.1 port XXXX after 0 ms` = 该端口没有代理进程监听，检查 Clash Verge 是否开启、端口是否 7897
+- 报错 `Failed to connect to 127.0.0.1 port XXXX after 0 ms` = 该端口没有代理进程监听，检查
+  Clash Verge 是否开启、端口是否 7897
 - HTTPS clone 慢 → 检查 4.1；SSH clone 慢/超时 → 检查 4.2 的 ProxyCommand
 
 ---
@@ -281,4 +289,5 @@ curl -x http://127.0.0.1:7897 -I https://github.com   # 验证端口可用
 
 ---
 
-> **记住**：网络问题上 HTTPS 通道看 `git config`，SSH 通道看 `~/.ssh/config`，两条路独立配置；commit 信息统一用 Conventional Commits，仓库才经得起回看。
+> **记住**：网络问题上 HTTPS 通道看 `git config`，SSH 通道看 `~/.ssh/config`，两条路独立配置；commit
+> 信息统一用 Conventional Commits，仓库才经得起回看。

@@ -119,6 +119,7 @@ clang-format --version
 4. 验证：`clang-format --version`
 
 > 或通过包管理器安装：
+>
 > ```powershell
 > winget install LLVM.LLVM
 > ```

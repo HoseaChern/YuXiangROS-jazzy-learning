@@ -3,7 +3,8 @@
 ## 1. 什么是 CMake？
 
 - **定位**: 一款**跨平台**的构建工具生成器。它不是一个直接的编译器，而是用来生成 Makefile 或 IDE 工程文件的“管家”。
-- **核心哲学**: **“源外构建” (Out-of-source build)**——编译产生的所有临时文件（`.o`、可执行文件等）都放在单独的 `build` 目录中，绝不污染源代码目录。
+- **核心哲学**: **“源外构建” (Out-of-source build)**——编译产生的所有临时文件（`.o`、可执行文件等）
+  都放在单独的 `build` 目录中，绝不污染源代码目录。
 - **一句话总结**: 程序员写 `CMakeLists.txt`，CMake 读取它并自动适配当前系统（Linux/Mac/Windows）的编译环境。
 
 ## 2. 为什么不用直接的 g++ 命令？
@@ -77,7 +78,8 @@ add_executable(my_app main.cpp)
 | **`find_package`**               | 自动查找系统中的第三方库                 | `find_package(OpenCV REQUIRED)`                     |
 | **`set`**                        | 设置或修改变量                           | `set(SOURCES main.cpp helper.cpp)`                  |
 
-> **💡 现代 CMake 最佳实践**: 尽量使用带 `target_` 前缀的命令（如 `target_include_directories`）代替全局命令（如 `include_directories`），这样能精确控制依赖的传递性，避免污染其他模块。
+> **💡 现代 CMake 最佳实践**: 尽量使用带 `target_` 前缀的命令（如 `target_include_directories`）
+> 代替全局命令（如 `include_directories`），这样能精确控制依赖的传递性，避免污染其他模块。
 
 ## 7. Debug 与 Release 切换
 
@@ -95,7 +97,8 @@ make
 
 ## 8. 多目录项目结构示例
 
-当一个项目有多个子文件夹时（如 `src`、`include`、`lib`），推荐在根目录的 `CMakeLists.txt` 中使用 `add_subdirectory`。
+当一个项目有多个子文件夹时（如 `src`、`include`、`lib`），推荐在根目录的 `CMakeLists.txt`
+中使用 `add_subdirectory`。
 
 **目录结构**:
 
