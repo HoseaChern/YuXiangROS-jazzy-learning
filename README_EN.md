@@ -185,7 +185,7 @@ way**. Below is the author's current complete config, **for reference only**
 format-on-save for C/C++ is handled by clangd, plus ROS 2 workspace Python
 interface-package search paths (including `.venv`):
 
-```json
+```jsonc
 {
   // clangd takes over IntelliSense (zero cpptools)
   "clangd.path": "/usr/bin/clangd",

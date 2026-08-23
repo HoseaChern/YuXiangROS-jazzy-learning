@@ -204,7 +204,7 @@ Conda 的解释器路径，导致 ROS 2 的 Python 库无法被识别。
 
 在你的工作区根目录下创建 `.vscode/c_cpp_properties.json`，填入以下内容（针对 ROS 2 Jazzy 已配置好）：
 
-```json
+```jsonc
 {
     "configurations": [
         {

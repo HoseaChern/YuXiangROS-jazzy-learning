@@ -154,7 +154,7 @@ pip install <package_name>                       # 安装包（无需 sudo）
 **仅供参考**——核心思路：clangd 接管 C/C++ IntelliSense（零 cpptools），C/C++ 保存时自动格式化；顺带配好
 ROS 2 各 workspace 的 Python 接口包搜索路径（含 `.venv`）：
 
-```json
+```jsonc
 {
   // clangd 接管 IntelliSense（零 cpptools）
   "clangd.path": "/usr/bin/clangd",
