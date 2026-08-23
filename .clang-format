@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+ReflowComments: Never
+BreakBeforeBraces: Attach
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+BinPackArguments: false
+AlignAfterOpenBracket: BlockIndent
+AllowAllArgumentsOnNextLine: false
+NamespaceIndentation: None
