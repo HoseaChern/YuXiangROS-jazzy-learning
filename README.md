@@ -17,6 +17,7 @@
 - [各章导读](#各章导读)
 - [原创工具：Dict_To_URDF](#原创工具dict_to_urdf)
 - [Chap9 第三方依赖包获取](#chap9-第三方依赖包获取)
+- [Chap9 补充仓库：YuXiangROS-PIO-learning](#chap9-补充仓库yuxiangros-pio-learning)
 - [许可证与致谢](#许可证与致谢)
 
 ---
@@ -300,6 +301,18 @@ git clone https://github.com/fishros/ydlidar_ros2.git
 
 > 建议与上游保持同步：`git pull` 上游更新即可，本仓库不会对这些包做任何改动。
 > 其余自写包（`robot_bringup`、`robot_description`、`robot_navigation2`）已正常纳入版本管理。
+
+## Chap9 补充仓库：YuXiangROS-PIO-learning
+
+Chap9 聚焦实体机器人（micro-ROS / 雷达）开发，其中 **PlatformIO + micro-ROS
+单片机侧**（固件、板级支持）的学习内容与笔记已拆分至独立仓库：
+
+- 仓库地址：<https://github.com/HoseaChern/YuxiangROS-PIO-learning>
+- 定位：**Chap9 的补充内容**。原分散于本仓库 `Docs/` 的两篇 PlatformIO 笔记
+  （工具链架构、CLI 速查）已迁移至该仓库，本仓库不再重复维护。
+
+两个仓库互相补充：本仓库专注 ROS 2 上位机侧（驱动、导航、micro-ROS Agent），
+PIO 仓库专注嵌入式下位机侧（PlatformIO 固件、micro-ROS 板级配置）。
 
 ## 许可证与致谢
 

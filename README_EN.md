@@ -22,6 +22,7 @@
 - [Chapter Guide](#chapter-guide)
 - [Original Tool: Dict_To_URDF](#original-tool-dict_to_urdf)
 - [Chap9 Third-Party Dependencies](#chap9-third-party-dependencies)
+- [Chap9 Companion Repo (PIO)](#chap9-companion-repo-yuxiangros-pio-learning)
 - [License & Credits](#license--credits)
 
 ---
@@ -357,6 +358,21 @@ git clone https://github.com/fishros/ydlidar_ros2.git
 > Keep them in sync with upstream: just `git pull` — this repo makes no
 > modifications to these packages. The self-written packages (`robot_bringup`,
 > `robot_description`, `robot_navigation2`) are tracked normally.
+
+## Chap9 Companion Repo: YuXiangROS-PIO-learning
+
+Chapter 9 focuses on physical robots (micro-ROS / LiDAR). The **PlatformIO +
+micro-ROS MCU-side** learning materials (firmware, board support) live in a
+separate repository:
+
+- Repo: <https://github.com/HoseaChern/YuxiangROS-PIO-learning>
+- Role: **companion to Chap9**. The two PlatformIO notes previously under
+  `Docs/` here (toolchain architecture, CLI cheatsheet) have been migrated
+  there, so this repo no longer maintains duplicates.
+
+The two repos complement each other: this one covers the ROS 2 host side
+(drivers, navigation, micro-ROS Agent), while the PIO repo covers the embedded
+MCU side (PlatformIO firmware, micro-ROS board configuration).
 
 ## License & Credits
 
