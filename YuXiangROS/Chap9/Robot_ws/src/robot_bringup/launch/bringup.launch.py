@@ -7,7 +7,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     fishbot_bringup_dir = get_package_share_directory("robot_bringup")
-    ydlidar_ros2_dir = get_package_share_directory("ydlidar_ros2")
+    ydlidar_dir = get_package_share_directory("ydlidar")
 
     urdf2tf = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -46,7 +46,7 @@ def generate_launch_description():
     ydlidar = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
-                ydlidar_ros2_dir,
+                ydlidar_dir,
                 "/launch",
                 "/ydlidar_launch.py",
             ]

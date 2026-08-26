@@ -24,7 +24,7 @@ ament_target_dependencies(odom2tf rclcpp tf2 tf2_ros geometry_msgs nav_msgs)
 
 install(TARGETS
     odom2tf
-    DESTINATION lid/${PROJECT_NAME}
+    DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY
