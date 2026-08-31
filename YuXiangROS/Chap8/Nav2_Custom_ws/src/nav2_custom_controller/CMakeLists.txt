@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(nav2_custom_controller)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

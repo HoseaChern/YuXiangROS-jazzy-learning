@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.20)
 project(demo_cpp_service)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
