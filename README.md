@@ -9,16 +9,18 @@
 
 ## 目录
 
-- [项目简介](#项目简介)
-- [环境说明与原书差异](#环境说明与原书差异)
-- [Python 虚拟环境（.venv）说明](#python-虚拟环境venv说明)
-- [C++ 工具链：clang 系列配置（2026-08-23）](#c-工具链clang-系列配置2026-08-23)
-- [Gazebo Classic → Harmonic 迁移要点](#gazebo-classic--harmonic-迁移要点)
-- [各章导读](#各章导读)
-- [原创工具：Dict_To_URDF](#原创工具dict_to_urdf)
-- [Chap9 第三方依赖包获取](#chap9-第三方依赖包获取)
-- [Chap9 补充仓库：YuXiangROS-PIO-learning](#chap9-补充仓库yuxiangros-pio-learning)
-- [许可证与致谢](#许可证与致谢)
+- [YuXiangROS-jazzy-learning](#yuxiangros-jazzy-learning)
+  - [目录](#目录)
+  - [项目简介](#项目简介)
+  - [环境说明与原书差异](#环境说明与原书差异)
+  - [Python 虚拟环境（.venv）说明](#python-虚拟环境venv说明)
+  - [C++ 工具链：clang 系列配置（2026-08-23）](#c-工具链clang-系列配置2026-08-23)
+  - [Gazebo Classic → Harmonic 迁移要点](#gazebo-classic--harmonic-迁移要点)
+  - [各章导读](#各章导读)
+  - [原创工具：Dict\_To\_URDF](#原创工具dict_to_urdf)
+  - [Chap9 第三方依赖包获取](#chap9-第三方依赖包获取)
+  - [Chap9 补充仓库：YuXiangROS-PIO-learning](#chap9-补充仓库yuxiangros-pio-learning)
+  - [许可证与致谢](#许可证与致谢)
 
 ---
 
@@ -248,17 +250,21 @@ bo_sim.launch.py`，其中每一处 Harmonic 改动旁均有 `# 旧版: xxx` 注
 > 实际搭建不必一次装齐——可按后面章节的实际需要逐步完成（本仓库环境均为 Ubuntu 24.04 + Jazzy + Harmonic 的适配结果，
 > 详见上方差异表与 `Docs/` 笔记）。
 
-| 章节     | 主题                         | 主要内容                                                                                                                                                                                   |
-| -------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Chap2`  | ROS 2 基础                   | 最小 C++/Python 节点、创建 Python/C++ 包（`demo_python_pkg`、`demo_cpp_pkg`）、colcon 工作区（自定义话题发布/订阅、多线程）                                                                |
-| `Chap3`  | 话题 Topic                   | 小乌龟话题控制（`demo_cpp_topic`）、小说文本话题发布（`demo_python_topic`）、系统状态监控实践（自定义 `SystemStatus.msg` + 发布器 + 订阅显示）                                             |
-| `Chap4`  | 服务 Service                 | 自定义 `srv`（`FaceDetector.srv`、`Patrol.srv`）、基于 OpenCV 的人脸检测服务端/客户端（Python）、C++ 服务端与客户端                                                                        |
-| `Chap5`  | TF 坐标变换                  | 静态/动态 TF 广播器与监听器（C++ 与 Python），附 rosbag2 回放数据                                                                                                                          |
-| `Chap6`  | URDF 建模 + RViz + Gazebo    | 鱼车（fishbot）完整建模：URDF/Xacro、关节、传感器（相机/IMU/激光）、ros2_control 配置、RViz 显示、Gazebo Harmonic 仿真（含 `custom_room.sdf` 三室一厅世界）；**含原创工具 `Dict_To_URDF`** |
-| `Chap7`  | Nav2 导航                    | 基于 `nav2_simple_commander` 的巡逻应用（`patrol_node.py`、`waypoint_follower.py`）、语音播报服务、Nav2 参数配置与地图                                                                     |
-| `Chap8`  | Nav2 自定义插件 + pluginlib  | Nav2 自定义控制器插件、自定义全局规划器插件（C++，pluginlib 导出）、pluginlib 插件机制教学示例（`motion_control_system`）                                                                  |
-| `Chap9`  | 实体机器人（micro-ROS/雷达） | 实车启动整合（`robot_bringup`）、简化鱼车模型（`robot_description`）、实车 Nav2 导航（`robot_navigation2`）；依赖 4 个第三方包，需自行 clone（见下文）                                     |
-| `Chap10` | ROS 2 进阶                   | QoS 可靠性测试、Executor 模型、进程内通信（`compose`）、DDS 零拷贝租借消息（`shm_pub`）、时间同步（`message_filter`）、生命周期节点（`lifecyclenode`），附 FastDDS profile 示例            |
+| 章节     | 主题                         | 主要内容                                                                                                                                                                                                                                                                                  |
+| -------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Chap2`  | ROS 2 基础                   | 最小 C++/Python 节点、创建 Python/C++ 包（`demo_python_pkg`、`demo_cpp_pkg`）、colcon 工作区（自定义话题发布/订阅、多线程）                                                                                                                                                               |
+| `Chap3`  | 话题 Topic                   | 小乌龟话题控制（`demo_cpp_topic`）、小说文本话题发布（`demo_python_topic`）、系统状态监控实践（自定义 `SystemStatus.msg` + 发布器 + 订阅显示）                                                                                                                                            |
+| `Chap4`  | 服务 Service                 | 自定义 `srv`（`FaceDetector.srv`、`Patrol.srv`）、基于 OpenCV 的人脸检测服务端/客户端（Python）、C++ 服务端与客户端                                                                                                                                                                       |
+| `Chap5`  | TF 坐标变换                  | 静态/动态 TF 广播器与监听器（C++ 与 Python），附 rosbag2 回放数据                                                                                                                                                                                                                         |
+| `Chap6`  | URDF 建模 + RViz + Gazebo    | 鱼车（fishbot）完整建模：URDF/Xacro、关节、传感器（相机/IMU/激光）、ros2_control 配置、RViz 显示、Gazebo Harmonic 仿真（含 `custom_room.sdf` 三室一厅世界）；**含原创工具 `Dict_To_URDF`**                                                                                                |
+| `Chap7`  | Nav2 导航 + 动作通信         | `Navigation_ws`（原书）：基于 `nav2_simple_commander` 的巡逻应用（`patrol_node.py`、`waypoint_follower.py`）、语音播报服务、Nav2 参数配置与地图；**`Action_ws`（补充，原书无）**：独立动作通信演示，含 C++/Python 动作服务端与客户端、自定义接口 `chap7_interfaces/action/NavigateToPose` |
+| `Chap8`  | Nav2 自定义插件 + pluginlib  | Nav2 自定义控制器插件、自定义全局规划器插件（C++，pluginlib 导出）、pluginlib 插件机制教学示例（`motion_control_system`）                                                                                                                                                                 |
+| `Chap9`  | 实体机器人（micro-ROS/雷达） | 实车启动整合（`robot_bringup`）、简化鱼车模型（`robot_description`）、实车 Nav2 导航（`robot_navigation2`）；依赖 4 个第三方包，需自行 clone（见下文）                                                                                                                                    |
+| `Chap10` | ROS 2 进阶                   | QoS 可靠性测试、Executor 模型、进程内通信（`compose`）、DDS 零拷贝租借消息（`shm_pub`）、时间同步（`message_filter`）、生命周期节点（`lifecyclenode`），附 FastDDS profile 示例                                                                                                           |
+
+> **补充工作空间说明**
+> 表中 `Chap7/Navigation_ws` 为原书内容。原书仅在 Nav2 章节末尾以"导航调用"为例顺带介绍了 ROS 2 四大通信机制之一的**动作（action）通信**，并未提供独立的动作通信工作空间。
+> 本仓库的 **`Chap7/Action_ws` 为额外补充的工作空间（原书没有）**：它独立于 `nav2_simple_commander`，用 C++ 与 Python 各实现一套动作服务端与客户端，配套自定义接口 `chap7_interfaces/action/NavigateToPose`（字段 `target_x/target_y`），完整演示 goal 接受、feedback 反馈、result 返回与可取消（cancel）全流程，可作为动作通信的独立入门示例。运行时需 `--symlink-install` 构建并 source 该工作空间。
 
 ## 原创工具：Dict_To_URDF
 

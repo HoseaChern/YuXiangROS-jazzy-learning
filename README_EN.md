@@ -288,17 +288,31 @@ Chap10); each chapter contains self-contained workspaces.
 > (this repo's environment is fully adapted to Ubuntu 24.04 + Jazzy +
 > Harmonic — see the difference table above and the `Docs/` notes).
 
-| Chapter  | Topic                            | Highlights                                                                                                                                                                                                                   |
-| -------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Chap2`  | ROS 2 basics                     | Minimal C++/Python nodes; creating Python/C++ packages (`demo_python_pkg`, `demo_cpp_pkg`); colcon workspace (custom topic pub/sub, multithreading)                                                                          |
-| `Chap3`  | Topics                           | Turtlesim topic control (`demo_cpp_topic`); novel-text topic publisher (`demo_python_topic`); system-status monitoring practice (custom `SystemStatus.msg` + publisher + subscriber display)                                 |
-| `Chap4`  | Services                         | Custom `srv` (`FaceDetector.srv`, `Patrol.srv`); OpenCV-based face detection server/client in Python; C++ service server & client                                                                                            |
-| `Chap5`  | TF transforms                    | Static/dynamic TF broadcasters and listeners (C++ and Python), plus rosbag2 playback data                                                                                                                                    |
-| `Chap6`  | URDF modeling + RViz + Gazebo    | Full fishbot model: URDF/Xacro, joints, sensors (camera/IMU/laser), ros2_control config, RViz display, Gazebo Harmonic simulation (incl. the `custom_room.sdf` three-room world); **hosts the original `Dict_To_URDF` tool** |
-| `Chap7`  | Nav2 navigation                  | Patrol application on `nav2_simple_commander` (`patrol_node.py`, `waypoint_follower.py`), speech broadcast service, Nav2 params and maps                                                                                     |
-| `Chap8`  | Nav2 custom plugins + pluginlib  | Custom Nav2 controller plugin, custom global planner plugin (C++, exported via pluginlib), plus a pluginlib teaching example (`motion_control_system`)                                                                       |
-| `Chap9`  | Physical robot (micro-ROS/LiDAR) | Bringup integration (`robot_bringup`), simplified fishbot model (`robot_description`), physical-robot Nav2 navigation (`robot_navigation2`); depends on 4 third-party packages you must clone yourself (see below)           |
-| `Chap10` | ROS 2 advanced                   | QoS reliability tests, Executor models, intra-process composition, DDS zero-copy loaned messages (`shm_pub`), time synchronization (`message_filter`), lifecycle nodes (`lifecyclenode`), plus FastDDS profile examples      |
+| Chapter  | Topic                            | Highlights                                                                                                                                                                                                                                                                                                                                        |
+| -------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Chap2`  | ROS 2 basics                     | Minimal C++/Python nodes; creating Python/C++ packages (`demo_python_pkg`, `demo_cpp_pkg`); colcon workspace (custom topic pub/sub, multithreading)                                                                                                                                                                                               |
+| `Chap3`  | Topics                           | Turtlesim topic control (`demo_cpp_topic`); novel-text topic publisher (`demo_python_topic`); system-status monitoring practice (custom `SystemStatus.msg` + publisher + subscriber display)                                                                                                                                                      |
+| `Chap4`  | Services                         | Custom `srv` (`FaceDetector.srv`, `Patrol.srv`); OpenCV-based face detection server/client in Python; C++ service server & client                                                                                                                                                                                                                 |
+| `Chap5`  | TF transforms                    | Static/dynamic TF broadcasters and listeners (C++ and Python), plus rosbag2 playback data                                                                                                                                                                                                                                                         |
+| `Chap6`  | URDF modeling + RViz + Gazebo    | Full fishbot model: URDF/Xacro, joints, sensors (camera/IMU/laser), ros2_control config, RViz display, Gazebo Harmonic simulation (incl. the `custom_room.sdf` three-room world); **hosts the original `Dict_To_URDF` tool**                                                                                                                      |
+| `Chap7`  | Nav2 navigation + action         | `Navigation_ws` (book): patrol application on `nav2_simple_commander` (`patrol_node.py`, `waypoint_follower.py`), speech broadcast service, Nav2 params and maps; **`Action_ws` (supplemental, not in book)**: standalone action communication demo, C++/Python action server & client, custom interface `chap7_interfaces/action/NavigateToPose` |
+| `Chap8`  | Nav2 custom plugins + pluginlib  | Custom Nav2 controller plugin, custom global planner plugin (C++, exported via pluginlib), plus a pluginlib teaching example (`motion_control_system`)                                                                                                                                                                                            |
+| `Chap9`  | Physical robot (micro-ROS/LiDAR) | Bringup integration (`robot_bringup`), simplified fishbot model (`robot_description`), physical-robot Nav2 navigation (`robot_navigation2`); depends on 4 third-party packages you must clone yourself (see below)                                                                                                                                |
+| `Chap10` | ROS 2 advanced                   | QoS reliability tests, Executor models, intra-process composition, DDS zero-copy loaned messages (`shm_pub`), time synchronization (`message_filter`), lifecycle nodes (`lifecyclenode`), plus FastDDS profile examples                                                                                                                           |
+
+> **Supplemental workspace note**
+> `Chap7/Navigation_ws` in the table is the book's content. The book only
+> briefly introduces **action** communication (one of ROS 2's four
+> communication mechanisms) at the end of the Nav2 chapter, using "navigation
+> calls" as an example, and does **not** provide a standalone action
+> communication workspace.
+> This repo's **`Chap7/Action_ws` is an extra supplemental workspace (not in
+> the book)**: it is independent of `nav2_simple_commander`, providing both a
+> C++ and a Python action server & client, with the custom interface
+> `chap7_interfaces/action/NavigateToPose` (fields `target_x/target_y`). It
+> demonstrates the full goal-accept / feedback / result / cancel flow and can
+> serve as a standalone action-communication intro. Build with
+> `--symlink-install` and source this workspace when running.
 
 ## Original Tool: Dict_To_URDF
 
