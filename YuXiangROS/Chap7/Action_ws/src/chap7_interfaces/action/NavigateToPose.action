@@ -1,0 +1,16 @@
+# 目标: 目标点的坐标
+float32 target_x
+float32 target_y
+---
+# 结果: 执行结果
+int8 result
+int8 ABORTED=0
+int8 SUCCESS=1
+int8 CANCELED=2
+float32 final_distance  # 结束时与目标点的剩余距离
+---
+# 反馈: 实时位置与进度
+float32 current_x
+float32 current_y
+float32 distance  # 距目标点的距离
+float32 progress  # 进度 (0.0~1.0)
