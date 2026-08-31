@@ -229,7 +229,7 @@ Harmonic 内部使用 `gz-transport` 话题，ROS 2 侧通过 `ros_gz_bridge` �
 **Harmonic**：
 
 ```python
-arguments=[
+arguments = [
     # GZ → ROS: 仿真时钟
     "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
     # ROS → GZ: 速度指令（Gazebo 原生差速插件方式）

@@ -27,9 +27,7 @@ class FaceDetectorClient(Node):
         # 创建人脸识别客户端: 类型 FaceDetector, 服务名 /face_detect (注意: 这里没有回调函数传参)
         self.client = self.create_client(FaceDetector, "/face_detect")
         # 图像路径
-        self.test1_image_path = (
-            get_package_share_directory("demo_python_service") + "/resource/test1.jpg"
-        )
+        self.test1_image_path = get_package_share_directory("demo_python_service") + "/resource/test1.jpg"
         self.image = cv2.imread(self.test1_image_path)
 
         # 用于在回调中标记检测到人脸
@@ -157,9 +155,7 @@ class FaceDetectorClient(Node):
         """
 
         # 0. 创建参数更新客户端: 类型 SetParameters, 名称 /face_detection_server/set_parameters (注意: 服务名中应当为服务端节点名)
-        param_client = self.create_client(
-            SetParameters, "/face_detection_server/set_parameters"
-        )
+        param_client = self.create_client(SetParameters, "/face_detection_server/set_parameters")
 
         # 1. 等待服务端启动
         while not param_client.wait_for_service(timeout_sec=1.0):
@@ -205,9 +201,7 @@ class FaceDetectorClient(Node):
             if result.successful:
                 self.get_logger().info(f"Update {param.name} to {model} successfully")
             else:
-                self.get_logger().info(
-                    f"Update {param.name} to {model} failed: {result.reason}"
-                )
+                self.get_logger().info(f"Update {param.name} to {model} failed: {result.reason}")
 
 
 def main(args=None):

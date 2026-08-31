@@ -7,9 +7,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def main():
     # 1. 获取图片真实路径
-    default_image_path = (
-        get_package_share_directory("demo_python_service") + "/resource/default.jpg"
-    )
+    default_image_path = get_package_share_directory("demo_python_service") + "/resource/default.jpg"
 
     # 2. 使用 opencv 加载图像
     image = cv2.imread(default_image_path)

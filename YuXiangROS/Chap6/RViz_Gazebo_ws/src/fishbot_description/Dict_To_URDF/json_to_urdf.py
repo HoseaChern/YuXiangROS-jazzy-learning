@@ -200,9 +200,7 @@ class Mimic:
 
     @classmethod
     def from_dict(cls, d: Dict) -> "Mimic":
-        return cls(
-            joint=d["joint"], multiplier=d.get("multiplier"), offset=d.get("offset")
-        )
+        return cls(joint=d["joint"], multiplier=d.get("multiplier"), offset=d.get("offset"))
 
 
 @dataclass
@@ -251,9 +249,7 @@ class Joint:
             limits=Limit.from_dict(d["limits"]) if "limits" in d else None,
             dynamics=Dynamics.from_dict(d["dynamics"]) if "dynamics" in d else None,
             mimic=Mimic.from_dict(d["mimic"]) if "mimic" in d else None,
-            safety_controller=SafetyController.from_dict(d["safety_controller"])
-            if "safety_controller" in d
-            else None,
+            safety_controller=SafetyController.from_dict(d["safety_controller"]) if "safety_controller" in d else None,
         )
 
 
@@ -289,12 +285,6 @@ class Transmission:
 #           详见本节开头注释与 _build_xml_from_dict 的“@属性 / #text”约定。
 
 
-
-
-
-
-
-
 @dataclass
 class Robot:
     """机器人模型根节点"""
@@ -303,9 +293,7 @@ class Robot:
     links: List[Link] = field(default_factory=list)
     joints: List[Joint] = field(default_factory=list)
     materials: List[Material] = field(default_factory=list)
-    transmissions: List[Transmission] = field(
-        default_factory=list
-    )  # 保留兼容旧版 ros_control
+    transmissions: List[Transmission] = field(default_factory=list)  # 保留兼容旧版 ros_control
     # [修改说明] 新版直接用字典表示 gazebo / ros2_control 元素，不再使用中间 dataclass，
     #           使 JSON/pyacro 与最终 XML 结构更贴近。
     gazebo: List[Dict[str, Any]] = field(default_factory=list)
@@ -327,9 +315,7 @@ class URDFBuilder:
 
             self.ET = ET
         except ImportError:
-            raise RuntimeError(
-                "xml.etree.ElementTree 是 Python 标准库，不应缺失"
-            )
+            raise RuntimeError("xml.etree.ElementTree 是 Python 标准库，不应缺失")
         self.root = self.ET.Element("robot", name=robot.name)
 
     # ---------- 辅助方法 ----------
@@ -477,13 +463,9 @@ class URDFBuilder:
         t = self._sub(self.root, "transmission", name=trans.name)
         self._sub(t, "type", text=trans.type)
         j = self._sub(t, "joint", name=trans.joint)
-        self._sub(
-            j, "hardwareInterface", text="hardware_interface/EffortJointInterface"
-        )
+        self._sub(j, "hardwareInterface", text="hardware_interface/EffortJointInterface")
         a = self._sub(t, "actuator", name=trans.actuator)
-        self._sub(
-            a, "hardwareInterface", text="hardware_interface/EffortJointInterface"
-        )
+        self._sub(a, "hardwareInterface", text="hardware_interface/EffortJointInterface")
         if trans.mechanical_reduction is not None:
             self._sub(a, "mechanicalReduction", text=str(trans.mechanical_reduction))
 
@@ -617,9 +599,7 @@ class URDFBuilder:
         if pretty:
             self._indent(self.root)
 
-        return '<?xml version="1.0"?>\n' + self.ET.tostring(
-            self.root, encoding="unicode"
-        )
+        return '<?xml version="1.0"?>\n' + self.ET.tostring(self.root, encoding="unicode")
 
     def _indent(self, elem, level=0):
         """美化 XML 缩进 (兼容 Python 3.9+ 无 indent() 的情况)"""
@@ -683,20 +663,13 @@ class URDFLoader:
             if missing:
                 self.errors.append(f"joints[{idx}] 缺少必填字段: {missing}")
             if j.get("type") not in self.JOINT_TYPES:
-                self.errors.append(
-                    f"joint '{j.get('name', '?')}' 类型无效: {j.get('type')}，"
-                    f"应为 {self.JOINT_TYPES}"
-                )
+                self.errors.append(f"joint '{j.get('name', '?')}' 类型无效: {j.get('type')}，应为 {self.JOINT_TYPES}")
             if j.get("parent") not in link_names:
-                j_name = j.get('name', '?')
-                self.errors.append(
-                    f"joint '{j_name}' 的 parent '{j.get('parent')}' 未定义"
-                )
+                j_name = j.get("name", "?")
+                self.errors.append(f"joint '{j_name}' 的 parent '{j.get('parent')}' 未定义")
             if j.get("child") not in link_names:
-                j_name = j.get('name', '?')
-                self.errors.append(
-                    f"joint '{j_name}' 的 child '{j.get('child')}' 未定义"
-                )
+                j_name = j.get("name", "?")
+                self.errors.append(f"joint '{j_name}' 的 child '{j.get('child')}' 未定义")
             if "name" in j:
                 joint_names.add(j["name"])
 
@@ -704,13 +677,9 @@ class URDFLoader:
         child_links = {j.get("child") for j in self.data.get("joints", [])}
         roots = link_names - child_links
         if len(roots) == 0:
-            self.errors.append(
-                "未找到 root link (所有 link 都被作为 child 引用)"
-            )
+            self.errors.append("未找到 root link (所有 link 都被作为 child 引用)")
         elif len(roots) > 1:
-            self.errors.append(
-                f"发现多个 root link: {roots} (URDF 要求单根树)"
-            )
+            self.errors.append(f"发现多个 root link: {roots} (URDF 要求单根树)")
 
         # 验证 gazebo 块
         # [修改说明] 新版不再维护插件/传感器注册表，只做基础引用校验：
@@ -719,9 +688,7 @@ class URDFLoader:
         for idx, g in enumerate(self.data.get("gazebo", [])):
             ref = g.get("reference")
             if ref is not None and ref not in link_names:
-                self.errors.append(
-                    f"gazebo[{idx}] reference '{ref}' 未在 links 中定义"
-                )
+                self.errors.append(f"gazebo[{idx}] reference '{ref}' 未在 links 中定义")
             sensor = g.get("sensor")
             if sensor and "@name" not in sensor and "name" not in sensor:
                 self.errors.append(f"gazebo[{idx}].sensor 缺少 name 属性")
@@ -731,10 +698,7 @@ class URDFLoader:
                 has_filename = "@filename" in plugin or "filename" in plugin
                 has_name = "@name" in plugin or "name" in plugin
                 if not has_type and not (has_filename and has_name):
-                    self.errors.append(
-                        f"gazebo[{idx}].plugin 必须指定 type "
-                        f"或同时指定 filename+name"
-                    )
+                    self.errors.append(f"gazebo[{idx}].plugin 必须指定 type 或同时指定 filename+name")
 
         # 验证 ros2_control
         for idx, rc in enumerate(self.data.get("ros2_control", [])):
@@ -750,11 +714,8 @@ class URDFLoader:
                 if "name" not in j:
                     self.errors.append(f"ros2_control[{idx}].joints[{jdx}] 缺少 name")
                 elif j["name"] not in joint_names:
-                    j_name = j['name']
-                    self.errors.append(
-                        f"ros2_control[{idx}].joints[{jdx}] "
-                        f"引用未定义关节 '{j_name}'"
-                    )
+                    j_name = j["name"]
+                    self.errors.append(f"ros2_control[{idx}].joints[{jdx}] 引用未定义关节 '{j_name}'")
 
         return len(self.errors) == 0
 
@@ -763,14 +724,10 @@ class URDFLoader:
         d = self.data
         return Robot(
             name=d["name"],
-            links=[
-                Link.from_dict(link_data) for link_data in d.get("links", [])
-            ],
+            links=[Link.from_dict(link_data) for link_data in d.get("links", [])],
             joints=[Joint.from_dict(j) for j in d.get("joints", [])],
             materials=[Material.from_dict(m) for m in d.get("materials", [])],
-            transmissions=[
-                Transmission.from_dict(t) for t in d.get("transmissions", [])
-            ],
+            transmissions=[Transmission.from_dict(t) for t in d.get("transmissions", [])],
             # [修改说明] 新版不再使用 Gazebo/Ros2Control dataclass，直接保留字典，
             #           由 URDFBuilder 通用/半结构化转换生成 XML。
             gazebo=d.get("gazebo", []),
@@ -815,9 +772,7 @@ def convert(
     loader = URDFLoader(data)
     if validate:
         if not loader.validate():
-            raise ValueError(
-                "JSON 验证失败:\n" + "\n".join(f"  - {e}" for e in loader.errors)
-            )
+            raise ValueError("JSON 验证失败:\n" + "\n".join(f"  - {e}" for e in loader.errors))
 
     # 构建
     robot = loader.load()
@@ -847,12 +802,8 @@ def main():
     )
     parser.add_argument("input", help="输入 JSON 文件路径")
     parser.add_argument("-o", "--output", help="输出 URDF 文件路径")
-    parser.add_argument(
-        "--no-validate", action="store_true", help="跳过结构验证 (不推荐)"
-    )
-    parser.add_argument(
-        "--no-pretty", action="store_true", help="输出紧凑 XML (无缩进)"
-    )
+    parser.add_argument("--no-validate", action="store_true", help="跳过结构验证 (不推荐)")
+    parser.add_argument("--no-pretty", action="store_true", help="输出紧凑 XML (无缩进)")
     args = parser.parse_args()
 
     try:

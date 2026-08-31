@@ -23,14 +23,10 @@ class TimeSyncTestNode(Node):
         self.synchronizer.registerCallback(self.result_callback)
 
     def imu_callback(self, imu_msg):
-        self.get_logger().info(
-            f"imu({imu_msg.header.stamp.sec},{imu_msg.header.stamp.nanosec})"
-        )
+        self.get_logger().info(f"imu({imu_msg.header.stamp.sec},{imu_msg.header.stamp.nanosec})")
 
     def odom_callback(self, odom_msg):
-        self.get_logger().info(
-            f"odom({odom_msg.header.stamp.sec},{odom_msg.header.stamp.nanosec})"
-        )
+        self.get_logger().info(f"odom({odom_msg.header.stamp.sec},{odom_msg.header.stamp.nanosec})")
 
     def result_callback(self, imu_msg, odom_msg):
         self.get_logger().info(

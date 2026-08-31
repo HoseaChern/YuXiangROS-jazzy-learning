@@ -30,9 +30,7 @@ base_link, footprint_link, footprint_joint = make_base_link(length=0.12, radius=
 imu_link, imu_joint = make_imu_link(xyz=[0, 0, 0.02])
 # [说明] 调用顺序与 xacro 中 base -> imu -> laser -> camera -> wheel -> caster 保持一致，
 #        使 pyacro 生成的 URDF 元素顺序与 xacro 输出一致，便于对比。
-cylinder_link, cylinder_joint, laser_link, laser_joint = make_laser_links(
-    xyz=[0, 0, 0.10]
-)
+cylinder_link, cylinder_joint, laser_link, laser_joint = make_laser_links(xyz=[0, 0, 0.10])
 camera_link, camera_joint = make_camera_link(xyz=[0.10, 0, 0.075])
 left_wheel_link, left_wheel_joint = make_wheel_link(
     wheel_name="left",

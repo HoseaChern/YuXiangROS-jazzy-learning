@@ -62,19 +62,19 @@ convention = "google"
 
 ### 配置说明
 
-| 配置项                      | 值              | 说明                                                              |
-| --------------------------- | --------------- | ----------------------------------------------------------------- |
-| `target-version`            | `"py312"`       | 目标 Python 版本：ROS 2 Jazzy 为 3.12                              |
-| `line-length`               | `120`           | 行宽限制 120 字符（与 Python 样板一致）                            |
-| `indent-width`              | `4`             | 缩进宽度 4 个空格                                                  |
-| `exclude`                   | 见配置          | 用 `**/xxx/**` 形式排除任意层级的 `.venv`、`build`、`install`、`log` 等 |
-| `quote-style`               | `"double"`      | 统一双引号                                                          |
-| `indent-style`              | `"space"`       | 使用空格缩进                                                        |
-| `line-ending`               | `"auto"`        | 换行符自动检测（Linux 下为 LF）                                    |
-| `skip-magic-trailing-comma` | `false`         | 保留尾随逗号，用于控制垂直排版                                      |
-| `lint.select`               | `E/F/I/N/W/UP/B/C4/SIM` | Lint 规则集（与 Python 样板一致）                   |
-| `lint.ignore`               | `["E501"]`      | 行长度交给 formatter 处理，lint 不再报错                            |
-| `lint.pydocstyle.convention` | `"google"`     | Google 风格 docstring                                              |
+| 配置项                       | 值                      | 说明                                                                    |
+| ---------------------------- | ----------------------- | ----------------------------------------------------------------------- |
+| `target-version`             | `"py312"`               | 目标 Python 版本：ROS 2 Jazzy 为 3.12                                   |
+| `line-length`                | `120`                   | 行宽限制 120 字符（与 Python 样板一致）                                 |
+| `indent-width`               | `4`                     | 缩进宽度 4 个空格                                                       |
+| `exclude`                    | 见配置                  | 用 `**/xxx/**` 形式排除任意层级的 `.venv`、`build`、`install`、`log` 等 |
+| `quote-style`                | `"double"`              | 统一双引号                                                              |
+| `indent-style`               | `"space"`               | 使用空格缩进                                                            |
+| `line-ending`                | `"auto"`                | 换行符自动检测（Linux 下为 LF）                                         |
+| `skip-magic-trailing-comma`  | `false`                 | 保留尾随逗号，用于控制垂直排版                                          |
+| `lint.select`                | `E/F/I/N/W/UP/B/C4/SIM` | Lint 规则集（与 Python 样板一致）                                       |
+| `lint.ignore`                | `["E501"]`              | 行长度交给 formatter 处理，lint 不再报错                                |
+| `lint.pydocstyle.convention` | `"google"`              | Google 风格 docstring                                                   |
 
 ---
 
@@ -100,13 +100,13 @@ convention = "google"
 
 ### 关键字段说明
 
-| 字段                           | 说明                                                    |
-| ------------------------------ | ------------------------------------------------------- |
-| `editor.defaultFormatter`      | `"charliermarsh.ruff"` 指定 Python 文件使用 Ruff 格式化 |
-| `editor.codeActionsOnSave`     | `source.organizeImports.ruff` 保存时自动排序 import     |
+| 字段                           | 说明                                                       |
+| ------------------------------ | ---------------------------------------------------------- |
+| `editor.defaultFormatter`      | `"charliermarsh.ruff"` 指定 Python 文件使用 Ruff 格式化    |
+| `editor.codeActionsOnSave`     | `source.organizeImports.ruff` 保存时自动排序 import        |
 | `ruff.path`                    | Ruff 可执行文件的绝对路径（uv tool 托管于 `~/.local/bin`） |
-| `ruff.configuration`           | `ruff.toml` 配置文件的绝对路径                          |
-| `ruff.configurationPreference` | `"filesystemFirst"` 优先使用文件系统上的配置            |
+| `ruff.configuration`           | `ruff.toml` 配置文件的绝对路径                             |
+| `ruff.configurationPreference` | `"filesystemFirst"` 优先使用文件系统上的配置               |
 
 ---
 
@@ -139,7 +139,7 @@ import numpy as np
 from collections import defaultdict
 from myproject import utils
 
-x=1+2
+x = 1 + 2
 ```
 
 按 `Ctrl+S` 保存，预期效果：
@@ -173,14 +173,14 @@ ruff format --config /home/changli/Documents/ROS/ruff.toml .
 
 ## 五、与 Pylance 的分工
 
-| 功能 | Ruff | Pylance |
-| --- | --- | --- |
-| 代码格式化 | 负责 | 不负责 |
-| Import 排序 | 负责 | 不负责 |
-| Lint 规则（E/F/I/N/W/UP/B/C4/SIM） | 负责 | 不负责 |
-| 类型检查 | 不负责 | 负责 |
-| 未定义变量 | 不负责 | 负责 |
-| 智能提示 | 不负责 | 负责 |
+| 功能                               | Ruff   | Pylance |
+| ---------------------------------- | ------ | ------- |
+| 代码格式化                         | 负责   | 不负责  |
+| Import 排序                        | 负责   | 不负责  |
+| Lint 规则（E/F/I/N/W/UP/B/C4/SIM） | 负责   | 不负责  |
+| 类型检查                           | 不负责 | 负责    |
+| 未定义变量                         | 不负责 | 负责    |
+| 智能提示                           | 不负责 | 负责    |
 
 > 如果 Pylance 和 Ruff 对 `unused import` 重复提示，可在 VS Code 设置中关闭 Pylance 的该项诊断：
 >

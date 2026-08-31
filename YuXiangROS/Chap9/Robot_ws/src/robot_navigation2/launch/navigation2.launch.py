@@ -12,9 +12,7 @@ def generate_launch_description():
     # 获取与拼接默认路径
     fishbot_navigation2_dir = get_package_share_directory("robot_navigation2")
     nav2_bringup_dir = get_package_share_directory("nav2_bringup")
-    rviz_config_dir = os.path.join(
-        fishbot_navigation2_dir, "config", "nav2_fishbot_view.rviz"
-    )
+    rviz_config_dir = os.path.join(fishbot_navigation2_dir, "config", "nav2_fishbot_view.rviz")
 
     # 配置默认参数值
     use_sim_time = LaunchConfiguration(

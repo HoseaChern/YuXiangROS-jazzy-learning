@@ -27,7 +27,9 @@ class LearnExecutorNode(Node):
 
     def timer_callback(self):
         msg = String()
-        msg.data = f"Topic published: Thread ID: {threading.get_ident()}, Total Thread Numbers: {threading.active_count()}"
+        msg.data = (
+            f"Topic published: Thread ID: {threading.get_ident()}, Total Thread Numbers: {threading.active_count()}"
+        )
         self.get_logger().info(msg.data)
         self.publisher.publish(msg)
 

@@ -31,8 +31,11 @@ def make_caster_link(caster_name: str, xyz: list) -> tuple:
                 "rpy": [0, 0, 0],
             },
             "inertia": [
-                1e-6, 0, 0,
-                1e-6, 0,
+                1e-6,
+                0,
+                0,
+                1e-6,
+                0,
                 1e-6,
             ],
         },

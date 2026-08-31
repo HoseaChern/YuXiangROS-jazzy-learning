@@ -47,10 +47,10 @@ pip install graphviz
 ```python
 from graphviz import Source
 
-with open('robot.gv', 'r') as f:
+with open("robot.gv", "r") as f:
     src = Source(f.read())
 
-src.render('robot', format='png', cleanup=True)  # 输出 robot.png
+src.render("robot", format="png", cleanup=True)  # 输出 robot.png
 ```
 
 ### 方法 D：在线工具（免安装）

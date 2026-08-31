@@ -15,9 +15,7 @@ class PersonNode(Node):
         self.age = age
 
     def say_hello(self, hobby: str):
-        self.get_logger().info(
-            f"Hello, my name is {self.name}, and I am {self.age} years old. I like {hobby}."
-        )
+        self.get_logger().info(f"Hello, my name is {self.name}, and I am {self.age} years old. I like {hobby}.")
 
 
 def main(args=None):

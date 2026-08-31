@@ -28,12 +28,8 @@ class PatrolNode(BasicNavigator):
         self.declare_parameter("initial_point", [0.0, 0.0, 0.0])
         self.declare_parameter("target_points", [0.0, 0.0, 0.0, 1.0, 1.0, 1.57])
 
-        self.initial_point_ = (
-            self.get_parameter("initial_point").get_parameter_value().double_array_value
-        )
-        self.target_points_ = (
-            self.get_parameter("target_points").get_parameter_value().double_array_value
-        )
+        self.initial_point_ = self.get_parameter("initial_point").get_parameter_value().double_array_value
+        self.target_points_ = self.get_parameter("target_points").get_parameter_value().double_array_value
 
         # 创建语音合成客户端: 类型 SpeachText, 服务名 /speach_text
         self.speach_client = self.create_client(SpeachText, "/speach_text")
@@ -44,17 +40,13 @@ class PatrolNode(BasicNavigator):
             "image_save_path",
             "",
         )
-        self.image_save_path_ = (
-            self.get_parameter("image_save_path").get_parameter_value().string_value
-        )
+        self.image_save_path_ = self.get_parameter("image_save_path").get_parameter_value().string_value
 
         # 实例化格式转换器
         self.bridge = CvBridge()
         self.latest_image = None
         # 创建图像订阅器: 类型 Image, 话题名 /camera/image, 队列大小 10
-        self.subscription_image = self.create_subscription(
-            Image, "/camera/image", self.image_callback, 10
-        )
+        self.subscription_image = self.create_subscription(Image, "/camera/image", self.image_callback, 10)
 
     def get_pose_by_xyyaw(self, x, y, yaw):
         """
@@ -85,9 +77,7 @@ class PatrolNode(BasicNavigator):
         """
 
         # 从参数获取初始化点
-        self.initial_point_ = (
-            self.get_parameter("initial_point").get_parameter_value().double_array_value
-        )
+        self.initial_point_ = self.get_parameter("initial_point").get_parameter_value().double_array_value
         # 合成位姿并调用初始化
         self.setInitialPose(
             self.get_pose_by_xyyaw(
@@ -105,9 +95,7 @@ class PatrolNode(BasicNavigator):
         """
 
         points = []
-        self.target_points_ = (
-            self.get_parameter("target_points").get_parameter_value().double_array_value
-        )
+        self.target_points_ = self.get_parameter("target_points").get_parameter_value().double_array_value
 
         # 按三个一组进行分割
         for index in range(int(len(self.target_points_) / 3)):
@@ -139,9 +127,7 @@ class PatrolNode(BasicNavigator):
                 self.get_logger().info("No feedback available")
                 continue
 
-            self.get_logger().info(
-                f"Remaining Distance: {feedback.distance_remaining:.2f} m"
-            )
+            self.get_logger().info(f"Remaining Distance: {feedback.distance_remaining:.2f} m")
 
         result = self.getResult()
         if result == TaskResult.SUCCEEDED:

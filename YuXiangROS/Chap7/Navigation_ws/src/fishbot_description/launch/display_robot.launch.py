@@ -12,13 +12,9 @@ def generate_launch_description():
     # 获取功能包路径
     urdf_tutorial_path = get_package_share_directory("fishbot_description")
     # 获取默认 URDF/Xacro 路径 (总之是描述文件路径)
-    default_model_path = os.path.join(
-        urdf_tutorial_path, "urdf", "fishbot", "fishbot.urdf.xacro"
-    )
+    default_model_path = os.path.join(urdf_tutorial_path, "urdf", "fishbot", "fishbot.urdf.xacro")
     # 获取当前RViz配置路径
-    default_rviz_config_path = os.path.join(
-        urdf_tutorial_path, "config", "rviz", "display_model.rviz"
-    )
+    default_rviz_config_path = os.path.join(urdf_tutorial_path, "config", "rviz", "display_model.rviz")
 
     # 为路径声明 launch 参数
     action_declare_arg_mode_path = DeclareLaunchArgument(

@@ -21,9 +21,7 @@ def generate_launch_description():
     # 获取功能包路径
     urdf_tutorial_path = get_package_share_directory("fishbot_description")
     # 默认模型路径
-    default_model_path = os.path.join(
-        urdf_tutorial_path, "urdf", "fishbot", "fishbot.urdf.xacro"
-    )
+    default_model_path = os.path.join(urdf_tutorial_path, "urdf", "fishbot", "fishbot.urdf.xacro")
     # 默认世界路径, 旧版: .world
     default_world_path = os.path.join(urdf_tutorial_path, "world", "custom_room.sdf")
 

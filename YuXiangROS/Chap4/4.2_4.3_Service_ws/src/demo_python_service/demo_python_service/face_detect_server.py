@@ -47,9 +47,7 @@ class FaceDetectorServer(Node):
             self.detect_face_callback,
         )
         # 默认图像路径
-        self.default_image_path = (
-            get_package_share_directory("demo_python_service") + "/resource/default.jpg"
-        )
+        self.default_image_path = get_package_share_directory("demo_python_service") + "/resource/default.jpg"
 
         # 声明参数
         # 参数名: face_locations_upsample_times, 默认值: 1
@@ -58,16 +56,8 @@ class FaceDetectorServer(Node):
         self.declare_parameter("face_locations_model", "hog")
 
         # 获取参数值 (注意: 建议使用 get_parameter_value().***_value 获取指定类型的值, 否则Pylance会报错)
-        self.upsample_times = (
-            self.get_parameter("face_locations_upsample_times")
-            .get_parameter_value()
-            .integer_value
-        )
-        self.model = (
-            self.get_parameter("face_locations_model")
-            .get_parameter_value()
-            .string_value
-        )
+        self.upsample_times = self.get_parameter("face_locations_upsample_times").get_parameter_value().integer_value
+        self.model = self.get_parameter("face_locations_model").get_parameter_value().string_value
 
         # 添加参数回调函数
         self.add_on_set_parameters_callback(self.parameters_callback)
@@ -124,9 +114,7 @@ class FaceDetectorServer(Node):
         """
         # 遍历参数列表, 根据参数名更新参数值
         for parameter in parameters:
-            self.get_logger().info(
-                f"Parameter: {parameter.name} is changed to {parameter.value}"
-            )
+            self.get_logger().info(f"Parameter: {parameter.name} is changed to {parameter.value}")
             if parameter.name == "face_locations_upsample_times":
                 self.upsample_times = parameter.value
             if parameter.name == "face_locations_model":

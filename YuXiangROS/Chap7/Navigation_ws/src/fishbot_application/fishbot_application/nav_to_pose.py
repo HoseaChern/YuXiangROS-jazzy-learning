@@ -39,9 +39,7 @@ def main(args=None):
         # )
         # 使用 distance_remaining 替代 estimated_time_remaining
         # 在 jazzy 中, estimated_time_remaining有已知问题, 始终返回默认值0.0
-        navigator.get_logger().info(
-            f"Remaining Distance: {feedback.distance_remaining:.2f} m"
-        )
+        navigator.get_logger().info(f"Remaining Distance: {feedback.distance_remaining:.2f} m")
 
         # 超时自动取消
         if Duration.from_msg(feedback.navigation_time) > Duration(seconds=600.0):
