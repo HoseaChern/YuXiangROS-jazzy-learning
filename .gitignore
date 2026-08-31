@@ -10,6 +10,7 @@ log/
 # python
 .venv/
 __pycache__/
+.ruff_cache/
 
 # Chap9 第三方 git clone 包（读者需自行 clone，见 README）
 YuXiangROS/Chap9/Robot_ws/src/micro-ROS-Agent/

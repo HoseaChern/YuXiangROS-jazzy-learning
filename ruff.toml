@@ -1,0 +1,51 @@
+# Ruff 独立配置文件
+# 职责: Python 代码格式化 + Import 排序 + Lint
+# 风格与 .clangd 一致: 独立配置文件, 而非内嵌 pyproject.toml
+# 其他代码诊断(类型检查、未定义变量等)交给 Pylance
+
+target-version = "py312" # ROS 2 Jazzy 使用 Python 3.12
+line-length = 120
+indent-width = 4
+
+exclude = [
+    "**/.git/**",
+    "**/.vscode/**",
+    "**/.venv/**",
+    "**/build/**",
+    "**/install/**",
+    "**/log/**",
+    "**/__pycache__/**",
+    "**/*.egg-info/**",
+    "**/.ruff_cache/**",
+    "**/.pytest_cache/**",
+    "**/.mypy_cache/**",
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+skip-magic-trailing-comma = false
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # Pyflakes
+    "I",   # isort (import 自动排序)
+    "N",   # pep8-naming
+    "W",   # pycodestyle warnings
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = ["E501"] # 行长度由 formatter 处理, lint 中不再报错
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.isort]
+combine-as-imports = true
+force-sort-within-sections = false
+lines-between-types = 1
+split-on-trailing-comma = false
