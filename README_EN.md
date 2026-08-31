@@ -11,19 +11,18 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Environment & Differences from the
-  Book](#environment--differences-from-the-book)
-- [Python Virtual Environment (.venv)](#python-virtual-environment-venv)
-- [C/C++ Toolchain: clang series setup
-  (2026-08-23)](#cc-toolchain-clang-series-setup-2026-08-23)
-- [Gazebo Classic → Harmonic Migration
-  Essentials](#gazebo-classic--harmonic-migration-essentials)
-- [Chapter Guide](#chapter-guide)
-- [Original Tool: Dict_To_URDF](#original-tool-dict_to_urdf)
-- [Chap9 Third-Party Dependencies](#chap9-third-party-dependencies)
-- [Chap9 Companion Repo (PIO)](#chap9-companion-repo-yuxiangros-pio-learning)
-- [License & Credits](#license--credits)
+- [YuXiangROS-jazzy-learning](#yuxiangros-jazzy-learning)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Environment \& Differences from the Book](#environment--differences-from-the-book)
+  - [Python Virtual Environment (.venv)](#python-virtual-environment-venv)
+  - [C/C++ Toolchain: clang series setup (2026-08-23)](#cc-toolchain-clang-series-setup-2026-08-23)
+  - [Gazebo Classic → Harmonic Migration Essentials](#gazebo-classic--harmonic-migration-essentials)
+  - [Chapter Guide](#chapter-guide)
+  - [Original Tool: Dict\_To\_URDF](#original-tool-dict_to_urdf)
+  - [Chap9 Third-Party Dependencies](#chap9-third-party-dependencies)
+  - [Chap9 Companion Repo: YuXiangROS-PIO-learning](#chap9-companion-repo-yuxiangros-pio-learning)
+  - [License \& Credits](#license--credits)
 
 ---
 
@@ -52,19 +51,19 @@ walkthrough of every migration pain point.
 
 ## Environment & Differences from the Book
 
-| Item | Original Book | This Repo |
-| --- | --- | --- |
-| OS | Ubuntu 22.04 | **Ubuntu 24.04** |
-| ROS 2 | Humble | **Jazzy** |
-| Gazebo | Gazebo Classic 11 | **Gazebo Harmonic** |
-| Simulation launch | `gazebo_ros/gazebo.launch.py` | `ros_gz_sim/gz_sim.launch.py` |
-| Entity spawning | `spawn_entity.py -entity` | `ros_gz_sim create -name` |
-| ros2_control hardware | `gazebo_ros2_control` | `gz_ros2_control` (`GazeboSimSystem`) |
-| World file | `.world` (SDF 1.6) | `.sdf` (SDF 1.9+/1.11) |
-| Topic/service bridging | automatic | explicit `parameter_bridge` |
-| Simulation clock | partially automatic | explicit `use_sim_time: True` required |
-| Python package management | system Python, direct `pip install` | **`.venv` virtual environment** (Ubuntu 23.10+ enforces PEP 668, see below) |
-| VS Code C/C++ extension | C/C++ Extension Pack (`ms-vscode.cpptools-extension-pack`) | **cpptools dropped**; clang toolchain instead (clangd / clang-format / clang-tidy, see below) |
+| Item                      | Original Book                                              | This Repo                                                                                                               |
+| ------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| OS                        | Ubuntu 22.04                                               | **Ubuntu 24.04**                                                                                                        |
+| ROS 2                     | Humble                                                     | **Jazzy**                                                                                                               |
+| Gazebo                    | Gazebo Classic 11                                          | **Gazebo Harmonic**                                                                                                     |
+| Simulation launch         | `gazebo_ros/gazebo.launch.py`                              | `ros_gz_sim/gz_sim.launch.py`                                                                                           |
+| Entity spawning           | `spawn_entity.py -entity`                                  | `ros_gz_sim create -name`                                                                                               |
+| ros2_control hardware     | `gazebo_ros2_control`                                      | `gz_ros2_control` (`GazeboSimSystem`)                                                                                   |
+| World file                | `.world` (SDF 1.6)                                         | `.sdf` (SDF 1.9+/1.11)                                                                                                  |
+| Topic/service bridging    | automatic                                                  | explicit `parameter_bridge`                                                                                             |
+| Simulation clock          | partially automatic                                        | explicit `use_sim_time: True` required                                                                                  |
+| Python package management | system Python, direct `pip install`                        | **uv-managed `.venv`** (`--system-site-packages` to inherit system packages; Ubuntu 23.10+ enforces PEP 668, see below) |
+| VS Code C/C++ extension   | C/C++ Extension Pack (`ms-vscode.cpptools-extension-pack`) | **cpptools dropped**; clang toolchain instead (clangd / clang-format / clang-tidy, see below)                           |
 
 > Background: Gazebo Classic reached **end of life in January 2025** and is
 > no longer installable from the Ubuntu 24.04 apt repositories, so moving to
@@ -76,43 +75,47 @@ walkthrough of every migration pain point.
 //peps.python.org/pep-0668/) and is marked "externally managed", so
 direct `pip install` is rejected (forcing `--break-system-packages` is not
 recommended). Meanwhile ROS 2 is bound to the system Python, and conda's own
-Python coexists poorly with it (I recently moved personal Python package
-management to [uv](https://docs.astral.sh/uv/), but managing a ROS 2
-workspace with uv — including `--system-site-packages` — is **not yet
-verified here**, so this repo still uses `.venv`). Therefore, **whenever
-Chapters 4 / 7 / 8 require installing third-party Python libraries, this repo
-uniformly uses a `.venv` virtual environment**:
+Python coexists poorly with it. **Since 2026-08-31 this repo manages the ROS 2
+workspace virtual environments with [uv](https://docs.astral.sh/uv/)**, keeping
+the exact same behavior as the old `python3 -m venv --system-site-packages`
+recipe — only the creation/install tool changed to uv (see the "Current
+approach: uv" section in [Docs/About_pyvenv.md](Docs/About_pyvenv.md)).
+Therefore, **whenever Chapters 4 / 7 / 8 require installing third-party Python
+libraries, this repo uniformly uses a `.venv` virtual environment**:
 
-| Chapter | Third-party libraries needed | Ready-made activation script |
-| --- | --- | --- |
-| `Chap4` (face detection service) | `face_recognition`, `dlib`, OpenCV, etc. | `YuXiangROS/Chap4/4.2_4.3_Service_ws/start_venv.zsh` |
-| `Chap7` (Nav2 patrol + speech broadcast) | `espeakng` (speech synthesis), etc. | `YuXiangROS/Chap7/Navigation_ws/start_venv.zsh` |
-| `Chap8` (Nav2 custom plugins) | same as Chap7 (`espeakng`) | `YuXiangROS/Chap8/Nav2_Custom_ws/start_venv.zsh` |
+| Chapter                                  | Third-party libraries needed             | Ready-made activation script                         |
+| ---------------------------------------- | ---------------------------------------- | ---------------------------------------------------- |
+| `Chap4` (face detection service)         | `face_recognition`, `dlib`, OpenCV, etc. | `YuXiangROS/Chap4/4.2_4.3_Service_ws/start_venv.zsh` |
+| `Chap7` (Nav2 patrol + speech broadcast) | `espeakng` (speech synthesis), etc.      | `YuXiangROS/Chap7/Navigation_ws/start_venv.zsh`      |
+| `Chap8` (Nav2 custom plugins)            | same as Chap7 (`espeakng`)               | `YuXiangROS/Chap8/Nav2_Custom_ws/start_venv.zsh`     |
 
 **Core commands** (the ROS 2 specific recipe — `--system-site-packages` is
-required, otherwise `rclpy` is not importable inside the venv):
+required, otherwise `rclpy` is not importable inside the venv; currently
+created with uv, see [Docs/About_pyvenv.md](Docs/About_pyvenv.md)):
 
 ```bash
-python3 -m venv .venv --system-site-packages   # create (inherits the
-system-installed ROS 2 packages)
-source .venv/bin/activate                        # activate
-pip install <package_name>                       # install (no sudo needed)
+uv venv .venv --python 3.12.13 --system-site-packages --seed   # create (uv)
+printf '/usr/lib/python3/dist-packages\n/usr/local/lib/python3.12/dist-packages\n' \
+  > .venv/lib/python3.12/site-packages/_ros_system.pth          # inject system dist-packages
+source .venv/bin/activate                                       # activate
+uv pip install colcon-common-extensions <package_name>          # install (no sudo needed)
+uv pip install "numpy==1.26.4"                                  # pin numpy to system version
 ```
 
 > ⚠️ **Two frequent gotchas**:
 >
 > 1. `ros2 run` uses the system Python and won't see packages installed in
 > the venv — install your own `colcon` inside the venv
-> (`pip install --ignore-installed colcon-common-extensions`) and make
+> (`uv pip install colcon-common-extensions`) and make
 > sure `which colcon` points to `.venv/bin/colcon`;
 > 2. The workspace path **must not contain spaces**, otherwise
 > setuptools-generated shebangs get truncated at the space and `ros2 run`
 > fails (`4.2 Service_ws` → `4.2_4.3_Service_ws` was renamed after exactly
 > this pitfall).
 
-The full note (prerequisites, zsh auto-activation, venv vs conda comparison,
-detailed walkthrough of 4 pitfalls, one-click activation script template) is
-in **`Docs/About pyvenv.md`** (in Chinese).
+The full note (the uv-managed approach, prerequisites, zsh auto-activation,
+venv vs conda comparison, detailed walkthrough of 4 pitfalls, one-click
+activation script template) is in **`Docs/About_pyvenv.md`** (in Chinese).
 
 ## C/C++ Toolchain: clang series setup (2026-08-23)
 
@@ -129,10 +132,10 @@ this repo **fully abandons cpptools** in favor of the **clang toolchain**
 
 **Layered structure** (separation of concerns):
 
-| Layer | Config | Purpose |
-| --- | --- | --- |
-| Workspace-wide | root `.clang-format` (LLVM base, 4-space indent, ColumnLimit 100), `.clang-tidy` (`clang-analyzer-*` / `bugprone-*` / `performance-*`) | code-quality & discipline standards |
-| Per workspace | a `.clangd` in every C++ workspace (`CompilationDatabase: build` + `-Wall -Wextra`) | clangd compilation parsing & completion |
+| Layer          | Config                                                                                                                                 | Purpose                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Workspace-wide | root `.clang-format` (LLVM base, 4-space indent, ColumnLimit 100), `.clang-tidy` (`clang-analyzer-*` / `bugprone-*` / `performance-*`) | code-quality & discipline standards     |
+| Per workspace  | a `.clangd` in every C++ workspace (`CompilationDatabase: build` + `-Wall -Wextra`)                                                    | clangd compilation parsing & completion |
 
 > **Boundary of responsibilities**: `.clang-format` / `.clang-tidy` enforce
 > **workspace-wide** code quality & discipline; `.clangd` handles
@@ -250,16 +253,16 @@ When moving from Humble + Classic to Jazzy + Harmonic, beginners most often
 get stuck because **all simulation commands and file formats changed**. Key
 differences distilled from this repo's practice:
 
-| Concern | Gazebo Classic (book) | Gazebo Harmonic (this repo) |
-| --- | --- | --- |
-| Start simulation | `gazebo_ros` package, `gazebo.launch.py`, args `world` / `verbose` | `ros_gz_sim` package, `gz_sim.launch.py`, arg `gz_args: "-r -v 4 <world>"` |
-| Spawn robot | `spawn_entity.py -entity fishbot -topic /robot_description` | `ros_gz_sim create -name fishbot -topic /robot_description` |
-| ros2_control | `gazebo_ros2_control` plugin | `gz_ros2_control/GazeboSimSystem` hardware interface + `gz_ros2_control-system` plugin |
-| Topic bridging | automatic by default | must explicitly `parameter_bridge "<ros_topic>@<ROS_type>[<GZ_type>"` |
-| World file | `.world` (SDF 1.6, may reference external `model://` resources) | `.sdf` (SDF 1.9+/1.11, `<sdf><world>` root, fully inlined models, explicit system plugins such as `gz-sim-physics-system`) |
-| Simulation clock | partially aligned by default | must set `use_sim_time: True` for `robot_state_publisher`, `controller_manager`, etc., otherwise TF timestamps go wrong |
-| Velocity commands | `diff_drive_controller` supports `use_stamped_vel` | Jazzy removes that param; use `twist_stamper` to convert `Twist` → `TwistStamped` |
-| Controller startup | old `spawner` args | `spawner --param-file <file> --controller-manager-timeout 30` + `OnProcessExit` event chain |
+| Concern            | Gazebo Classic (book)                                              | Gazebo Harmonic (this repo)                                                                                                |
+| ------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| Start simulation   | `gazebo_ros` package, `gazebo.launch.py`, args `world` / `verbose` | `ros_gz_sim` package, `gz_sim.launch.py`, arg `gz_args: "-r -v 4 <world>"`                                                 |
+| Spawn robot        | `spawn_entity.py -entity fishbot -topic /robot_description`        | `ros_gz_sim create -name fishbot -topic /robot_description`                                                                |
+| ros2_control       | `gazebo_ros2_control` plugin                                       | `gz_ros2_control/GazeboSimSystem` hardware interface + `gz_ros2_control-system` plugin                                     |
+| Topic bridging     | automatic by default                                               | must explicitly `parameter_bridge "<ros_topic>@<ROS_type>[<GZ_type>"`                                                      |
+| World file         | `.world` (SDF 1.6, may reference external `model://` resources)    | `.sdf` (SDF 1.9+/1.11, `<sdf><world>` root, fully inlined models, explicit system plugins such as `gz-sim-physics-system`) |
+| Simulation clock   | partially aligned by default                                       | must set `use_sim_time: True` for `robot_state_publisher`, `controller_manager`, etc., otherwise TF timestamps go wrong    |
+| Velocity commands  | `diff_drive_controller` supports `use_stamped_vel`                 | Jazzy removes that param; use `twist_stamper` to convert `Twist` → `TwistStamped`                                          |
+| Controller startup | old `spawner` args                                                 | `spawner --param-file <file> --controller-manager-timeout 30` + `OnProcessExit` event chain                                |
 
 **Detailed tutorial** (in Chinese): [About_Gazebo.md](Docs/About_Gazebo.md) —
 an ~500-line note covering the Classic EOL timeline, side-by-side comparison
@@ -285,17 +288,17 @@ Chap10); each chapter contains self-contained workspaces.
 > (this repo's environment is fully adapted to Ubuntu 24.04 + Jazzy +
 > Harmonic — see the difference table above and the `Docs/` notes).
 
-| Chapter | Topic | Highlights |
-| --- | --- | --- |
-| `Chap2` | ROS 2 basics | Minimal C++/Python nodes; creating Python/C++ packages (`demo_python_pkg`, `demo_cpp_pkg`); colcon workspace (custom topic pub/sub, multithreading) |
-| `Chap3` | Topics | Turtlesim topic control (`demo_cpp_topic`); novel-text topic publisher (`demo_python_topic`); system-status monitoring practice (custom `SystemStatus.msg` + publisher + subscriber display) |
-| `Chap4` | Services | Custom `srv` (`FaceDetector.srv`, `Patrol.srv`); OpenCV-based face detection server/client in Python; C++ service server & client |
-| `Chap5` | TF transforms | Static/dynamic TF broadcasters and listeners (C++ and Python), plus rosbag2 playback data |
-| `Chap6` | URDF modeling + RViz + Gazebo | Full fishbot model: URDF/Xacro, joints, sensors (camera/IMU/laser), ros2_control config, RViz display, Gazebo Harmonic simulation (incl. the `custom_room.sdf` three-room world); **hosts the original `Dict_To_URDF` tool** |
-| `Chap7` | Nav2 navigation | Patrol application on `nav2_simple_commander` (`patrol_node.py`, `waypoint_follower.py`), speech broadcast service, Nav2 params and maps |
-| `Chap8` | Nav2 custom plugins + pluginlib | Custom Nav2 controller plugin, custom global planner plugin (C++, exported via pluginlib), plus a pluginlib teaching example (`motion_control_system`) |
-| `Chap9` | Physical robot (micro-ROS/LiDAR) | Bringup integration (`robot_bringup`), simplified fishbot model (`robot_description`), physical-robot Nav2 navigation (`robot_navigation2`); depends on 4 third-party packages you must clone yourself (see below) |
-| `Chap10` | ROS 2 advanced | QoS reliability tests, Executor models, intra-process composition, DDS zero-copy loaned messages (`shm_pub`), time synchronization (`message_filter`), lifecycle nodes (`lifecyclenode`), plus FastDDS profile examples |
+| Chapter  | Topic                            | Highlights                                                                                                                                                                                                                   |
+| -------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Chap2`  | ROS 2 basics                     | Minimal C++/Python nodes; creating Python/C++ packages (`demo_python_pkg`, `demo_cpp_pkg`); colcon workspace (custom topic pub/sub, multithreading)                                                                          |
+| `Chap3`  | Topics                           | Turtlesim topic control (`demo_cpp_topic`); novel-text topic publisher (`demo_python_topic`); system-status monitoring practice (custom `SystemStatus.msg` + publisher + subscriber display)                                 |
+| `Chap4`  | Services                         | Custom `srv` (`FaceDetector.srv`, `Patrol.srv`); OpenCV-based face detection server/client in Python; C++ service server & client                                                                                            |
+| `Chap5`  | TF transforms                    | Static/dynamic TF broadcasters and listeners (C++ and Python), plus rosbag2 playback data                                                                                                                                    |
+| `Chap6`  | URDF modeling + RViz + Gazebo    | Full fishbot model: URDF/Xacro, joints, sensors (camera/IMU/laser), ros2_control config, RViz display, Gazebo Harmonic simulation (incl. the `custom_room.sdf` three-room world); **hosts the original `Dict_To_URDF` tool** |
+| `Chap7`  | Nav2 navigation                  | Patrol application on `nav2_simple_commander` (`patrol_node.py`, `waypoint_follower.py`), speech broadcast service, Nav2 params and maps                                                                                     |
+| `Chap8`  | Nav2 custom plugins + pluginlib  | Custom Nav2 controller plugin, custom global planner plugin (C++, exported via pluginlib), plus a pluginlib teaching example (`motion_control_system`)                                                                       |
+| `Chap9`  | Physical robot (micro-ROS/LiDAR) | Bringup integration (`robot_bringup`), simplified fishbot model (`robot_description`), physical-robot Nav2 navigation (`robot_navigation2`); depends on 4 third-party packages you must clone yourself (see below)           |
+| `Chap10` | ROS 2 advanced                   | QoS reliability tests, Executor models, intra-process composition, DDS zero-copy loaned messages (`shm_pub`), time synchronization (`message_filter`), lifecycle nodes (`lifecyclenode`), plus FastDDS profile examples      |
 
 ## Original Tool: Dict_To_URDF
 
@@ -340,12 +343,12 @@ Under `Chap9/Robot_ws/src/` there are 4 third-party packages that are
 duplicate snapshots, this repo excludes them via `.gitignore` — **you must
 clone them yourself**:
 
-| Package | Purpose | Source |
-| --- | --- | --- |
-| `micro-ROS-Agent` | micro-ROS communication agent | <https://github.com/micro-ROS/micro-ROS-Agent> |
-| `micro_ros_msgs` | micro-ROS message definitions | <https://github.com/micro-ROS/micro_ros_msgs> |
-| `ros_serial2wifi` | Serial ↔ WiFi (UDP/TCP) transparent bridge (fishros community example) | <https://github.com/fishros/ros_serial2wifi> |
-| `ydlidar_ros2` | YDLidar LiDAR ROS 2 driver | <https://github.com/fishros/ydlidar_ros2> |
+| Package           | Purpose                                                                | Source                                         |
+| ----------------- | ---------------------------------------------------------------------- | ---------------------------------------------- |
+| `micro-ROS-Agent` | micro-ROS communication agent                                          | <https://github.com/micro-ROS/micro-ROS-Agent> |
+| `micro_ros_msgs`  | micro-ROS message definitions                                          | <https://github.com/micro-ROS/micro_ros_msgs>  |
+| `ros_serial2wifi` | Serial ↔ WiFi (UDP/TCP) transparent bridge (fishros community example) | <https://github.com/fishros/ros_serial2wifi>   |
+| `ydlidar_ros2`    | YDLidar LiDAR ROS 2 driver                                             | <https://github.com/fishros/ydlidar_ros2>      |
 
 ```bash
 cd YuXiangROS/Chap9/Robot_ws/src

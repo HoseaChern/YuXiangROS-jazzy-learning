@@ -1,6 +1,67 @@
 # Python venv 速查笔记
 
 > 适用于 ROS 2 Jazzy + Ubuntu 24.04 + zsh 环境
+>
+> **2026-08-31 更新**：本仓库 ROS 2 工作区（Chap4 / 7 / 8）已从系统 `python3 -m venv`
+> 迁移至 [uv](https://docs.astral.sh/uv/) 托管，见下方"零、当前方案"。以下第一 ~ 十章保留
+> 原 `python3 -m venv` 知识，作为历史方案与对比参考。
+
+---
+
+## 零、当前方案：uv 托管（2026-08-31 迁移）
+
+迁移目标是**行为与原方案完全一致**：`--system-site-packages` + venv 内独立 colcon +
+业务依赖（dlib / espeakng）直接安装，唯一区别是创建与安装工具换成 uv。
+
+### 0.1 一键创建（uv 版）
+
+```bash
+# 1) 用 uv 独立管理的 Python 3.12.13 创建 venv（继承系统包 + seed pip）
+uv venv .venv --python 3.12.13 --system-site-packages --seed
+
+# 2) 关键：注入系统 dist-packages（uv Python 的 system-site-packages 是空的！）
+printf '/usr/lib/python3/dist-packages\n/usr/local/lib/python3.12/dist-packages\n' \
+  > .venv/lib/python3.12/site-packages/_ros_system.pth
+
+# 3) 安装 colcon（独立装进 venv）+ 业务依赖
+uv pip install --python .venv/bin/python colcon-common-extensions <业务依赖>
+
+# 4) numpy 必须锁 1.26.4，防止 uv 解析出 2.x 破坏 ROS C 扩展 ABI
+uv pip install --python .venv/bin/python "numpy==1.26.4"
+```
+
+> **注意：uv 特有踩坑（与 `python3 -m venv` 的本质区别）**：
+>
+> 1. `uv venv --python 3.12.13` 使用 uv 独立管理的 CPython，其
+>    `include-system-site-packages=true` 指向的"系统"是 uv Python 自己的
+>    `site-packages`（基本为空），**不含** `/usr/lib/python3/dist-packages`。
+>    必须用上述 `.pth` 文件显式注入，才能继承系统 apt 包（numpy / yaml / cv2 /
+>    colcon 等）。
+> 2. uv 解析依赖会自动装最新版（如 numpy 2.x），必须显式锁 `numpy==1.26.4`
+>    与系统版对齐，否则与按 numpy 1.26 编译的 ROS C 扩展（cv_bridge 等）发生
+>    ABI 不兼容。
+> 3. `uv venv` 默认只 seed `pip`，setuptools 由 `uv pip install colcon-common-extensions`
+>    时自动补齐，无需手动指定。
+> 4. uv 0.12.5 的 `--seed` 只接受 flag（不接受参数列表），seed 包列表不可由此指定。
+
+### 0.2 分 workspace 依赖
+
+| workspace                  | 业务依赖（`uv pip install`）                   |
+| -------------------------- | ---------------------------------------------- |
+| `Chap4/4.2_4.3_Service_ws` | `face_recognition`、`dlib==20.0.1`（源码编译） |
+| `Chap7/Navigation_ws`      | `espeakng`                                     |
+| `Chap8/Nav2_Custom_ws`     | `espeakng`                                     |
+
+激活与构建仍走原 `start_venv.zsh`（`source .venv/bin/activate` 对 uv venv 同样有效）。
+
+### 0.3 迁移验收清单
+
+```bash
+.venv/bin/python -c "import rclpy"                  # 需先 source /opt/ros/jazzy/setup.zsh
+.venv/bin/python -c "import numpy; print(numpy.__version__)"  # 必须为 1.26.4
+.venv/bin/colcon build                              # 构建产物 shebang 指向 .venv/bin/python
+.venv/bin/python -c "import face_recognition"       # 或 espeakng（按 workspace）
+```
 
 ---
 
@@ -279,7 +340,7 @@ pip install 'setuptools<80,>=30.3.0'
 #!/bin/zsh
 # 保存为 ~/your_workspace/start_ws.zsh
 
-WS_DIR="/home/changli/Documents/ROS/YuXiangROS/Chap4/4.2_Service_ws"
+WS_DIR="/home/changli/Documents/ROS/YuXiangROS/Chap4/4.2_4.3_Service_ws"
 
 cd "$WS_DIR"
 source .venv/bin/activate
